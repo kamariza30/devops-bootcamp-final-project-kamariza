@@ -83,12 +83,6 @@ resource "aws_security_group" "private_sg" {
     user_data_replace_on_change = true
     user_data = <<-EOF
                 #!/bin/bash
-                apt update && apt upgrade -y
-                apt install pipx -y
-                pipx install --include-deps ansible
-                pipx ensurepath
-                source ~/.bashrc
-
                 # create ssh folder
                 mkdir -p /home/ubuntu/.ssh
                 chmod 700 /home/ubuntu/.ssh
@@ -98,7 +92,7 @@ resource "aws_security_group" "private_sg" {
                 ${tls_private_key.ssh_key.private_key_pem}
                 PRIVKEY
 
-                chmod 400 /home/ubuntu/.ssh/ansible-key.pem
+                chmod 600 /home/ubuntu/.ssh/ansible-key.pem
                 chown ubuntu:ubuntu /home/ubuntu/.ssh -R
                 EOF
 
