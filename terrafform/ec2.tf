@@ -17,7 +17,7 @@ resource "aws_security_group" "web_sg" {
       protocol    = "tcp"
       cidr_blocks = ["10.0.0.0/24"]   
     }
-    #the code below must delete before submission
+    #the code below must delete before submission port 8080
     ingress {
       from_port   = 8080
       to_port     = 8080
