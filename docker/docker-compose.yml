@@ -1,9 +1,0 @@
-services:
-  final-project:
-    build: .
-    container_name: final-project
-    ports:
-      - "8080:80"
-    environment:
-      - USER_NAME=Kamariza
-    restart: unless-stopped
