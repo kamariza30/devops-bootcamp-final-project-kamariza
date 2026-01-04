@@ -1,13 +1,13 @@
 [web]
 %{ for instance in instances ~}
-%{ if instance.tags_all.Name == "web-server" ~}
+%{ if instance.tags_all.Name == "web" ~}
 ${instance.tags_all.Name} ansible_host=${instance.private_ip}
 %{ endif ~}
 %{ endfor ~}
 
 [monitoring]
 %{ for instance in instances ~}
-%{ if instance.tags_all.Name == "grafana-server" ~}
+%{ if instance.tags_all.Name == "monitoring" ~}
 ${instance.tags_all.Name} ansible_host=${instance.private_ip}
 %{ endif ~}
 %{ endfor ~}

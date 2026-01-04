@@ -64,7 +64,7 @@ resource "aws_security_group" "private_sg" {
     key_name = aws_key_pair.ansible.key_name
 
     tags = {
-      Name = "web-server"
+      Name = "web"
     }
   }
 
@@ -115,6 +115,6 @@ resource "aws_security_group" "private_sg" {
     key_name = aws_key_pair.ansible.key_name
 
     tags = {
-      Name = "grafana-server"
+      Name = "monitoring"
     }
   }
