@@ -14,8 +14,5 @@ pipx install --include-deps ansible
 # Configure PATH for future shells
 pipx ensurepath
 
-# Optional: make sure current shell can see ~/.local/bin without re-login
-export PATH="$HOME/.local/bin:$PATH"
-
 # Verify installation
 ansible --version
