@@ -47,4 +47,3 @@ jobs:
               "docker pull 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest"
             ]' \
             --region us-east-1
-####
