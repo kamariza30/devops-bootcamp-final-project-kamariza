@@ -52,6 +52,10 @@ NEEDS_TAG=`git describe --contains $GIT_COMMIT 2>/dev/null`
 
 # only tag if no tag already
 if [ -z "$NEEDS_TAG" ]; then
+
+  git config user.email "github-actions[bot]@users.noreply.github.com"
+  git config user.name "github-actions[bot]"
+
   echo "Tagged with $NEW_TAG"
   git tag $NEW_TAG
   git push --tags
