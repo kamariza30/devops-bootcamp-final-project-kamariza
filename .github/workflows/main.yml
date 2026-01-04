@@ -44,6 +44,9 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
               "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 043876755378.dkr.ecr.us-east-1.amazonaws.com",
-              "docker pull 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest"
+              "docker pull 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest",
+              "docker stop final-project || true",
+              "docker rm final-project || true",
+              "docker run -d -p 8080:80 --name final-project 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest"
             ]' \
             --region us-east-1
