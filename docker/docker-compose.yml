@@ -5,5 +5,5 @@ services:
     ports:
       - "8080:80"
     environment:
-      - USER_NAME=${USER_NAME:-DevOps Engineer}
+      - USER_NAME=Kamariza
     restart: unless-stopped
