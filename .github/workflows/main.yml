@@ -47,6 +47,6 @@ jobs:
               "docker pull 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest",
               "docker stop final-project || true",
               "docker rm final-project || true",
-              "docker run -d -p 8080:80 --name final-project 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest"
+              "docker run -d -p 8080:80 -e USER_NAME=\"KAMARIZA SUHAINI\" --name final-project 043876755378.dkr.ecr.us-east-1.amazonaws.com/devops-bootcamp/final-project-kamariza:latest"
             ]' \
             --region us-east-1
