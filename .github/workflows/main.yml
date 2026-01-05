@@ -68,8 +68,3 @@ jobs:
               "docker run -d -p 8080:80 -e USER_NAME=\"KAMARIZA SUHAINI\" --name final-project $IMAGE_URI"
             ]' \
             --region us-east-1
-
-      - name: Verify deployment
-        run: |
-          sleep 10
-          curl -f http://${{ secrets.EC2_PUBLIC_IP }}:8080 || echo "App may still be starting..."
