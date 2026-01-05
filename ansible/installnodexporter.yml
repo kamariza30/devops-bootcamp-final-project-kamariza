@@ -1,0 +1,7 @@
+---
+- name: Deploy Node Exporter Docker to Web Server
+  hosts: web
+  become: true
+  
+  roles:
+    - node_exporter_docker
