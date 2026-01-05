@@ -1,0 +1,22 @@
+# Prometheus configuration
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'prometheus'
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['{{ monitoring_server_ip }}:9090']
+
+  # Node Exporter on Web Server
+  - job_name: 'web-server'
+    static_configs:
+      - targets: ['{{ web_server_ip }}:9100']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'web-server'
+

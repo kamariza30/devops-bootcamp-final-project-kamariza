@@ -48,6 +48,13 @@ resource "aws_security_group" "private_sg" {
      protocol    = "tcp"
      cidr_blocks = ["10.0.0.0/24"]
     }
+
+    ingress {
+      from_port   = 9090
+      to_port     = 9090
+      protocol    = "tcp"
+      cidr_blocks = ["10.0.0.0/24"]
+    }
     egress {
       from_port   = 0
       to_port     = 0

@@ -1,0 +1,7 @@
+---
+prometheus_image: prom/prometheus
+prometheus_version: latest
+prometheus_port: 9090
+prometheus_container_name: prometheus
+prometheus_data_dir: /data/prometheus
+prometheus_config_dir: /etc/prometheus

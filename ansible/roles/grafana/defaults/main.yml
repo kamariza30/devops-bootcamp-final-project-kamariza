@@ -1,0 +1,8 @@
+---
+grafana_image: grafana/grafana
+grafana_version: latest
+grafana_port: 3000
+grafana_container_name: grafana
+grafana_data_dir: /data/grafana
+grafana_admin_user: admin
+grafana_admin_password: kamaftw123  # Change this!
