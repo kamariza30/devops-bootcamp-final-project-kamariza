@@ -57,6 +57,15 @@ jobs:
         env:
           IMAGE_URI: ${{ needs.build-and-push.outputs.image-uri }}
         run: |
+
+          echo "DEBUG: IMAGE_URI = $IMAGE_URI"
+    
+          # If IMAGE_URI is empty, this will show it
+          if [ -z "$IMAGE_URI" ]; then
+            echo "ERROR: IMAGE_URI is empty!"
+              exit 1
+          fi
+
           aws ssm send-command \
             --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
