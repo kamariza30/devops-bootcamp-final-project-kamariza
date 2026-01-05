@@ -1,0 +1,7 @@
+# make sure to run: ansible-galaxy init roles/awscli
+- name: Install AWS CLI on remote hosts
+  hosts: web
+  become: true
+
+  roles:
+    - awscli

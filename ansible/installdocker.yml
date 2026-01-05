@@ -1,0 +1,8 @@
+#To run this playbook, you must this first: ansible-galaxy install geerlingguy.docker
+
+- name: Install Docker on remote hosts
+  hosts: all
+  become: true
+
+  roles:
+    - geerlingguy.docker
