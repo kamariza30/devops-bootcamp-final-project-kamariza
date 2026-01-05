@@ -48,3 +48,9 @@ output "grafana_server_private_ip" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.final_project.repository_url
 }
+output "web_server_instance_id" {
+  value = aws_instance.web_server.id
+}
+output "ecr_registry_id" {
+  value = aws_ecr_repository.final_project.id
+}
