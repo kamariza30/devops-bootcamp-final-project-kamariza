@@ -37,10 +37,13 @@ jobs:
           ECR_REPOSITORY: devops-bootcamp/final-project-kamariza
           IMAGE_TAG: ${{ steps.increment-git-tag.outputs.new_tag }}
         run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "IMAGE_URI=$IMAGE_URI"
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
+          echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "Image pushed: $IMAGE_URI"
+ 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
