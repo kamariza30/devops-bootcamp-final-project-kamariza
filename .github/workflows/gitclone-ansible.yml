@@ -1,0 +1,43 @@
+name: Sync Ansible Folder to Controller
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ansible/**'        # Auto-trigger on changes to ansible folder
+      - '.github/workflows/gitclone-ansible.yml'
+  workflow_dispatch:        # Manual trigger button
+
+jobs:
+  sync-ansible:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Sync ansible folder to controller
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.ANSIBLE_CONTROLLER_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "mkdir -p ~/ansible-playbooks",
+              "cd ~/ansible-playbooks",
+              "rm -rf final-project-kamariza || true",
+              "git clone --no-checkout --depth=1 https://github.com/kamariza30/final-project-kamariza.git",
+              "cd final-project-kamariza",
+              "git sparse-checkout init --cone",
+              "git sparse-checkout set ansible",
+              "git checkout main",
+              "echo \"✓ Ansible folder synced successfully at $(date)\"",
+              "ls -la ansible/"
+            ]' \
+            --region us-east-1
+
+      - name: Verify sync
+        run: echo "Ansible playbooks synced to controller"

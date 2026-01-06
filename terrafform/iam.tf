@@ -20,6 +20,12 @@ resource "aws_iam_role_policy_attachment" "es2_ssm_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+# Add ECR Pull Only policy. This allows EC2 instances to pull images from ECR.
+resource "aws_iam_role_policy_attachment" "ec2_ecr_pull_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+}
+
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "bootcamp-ec2-ssm-profile"
   role = aws_iam_role.ec2_ssm_role.name
