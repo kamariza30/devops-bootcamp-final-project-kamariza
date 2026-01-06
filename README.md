@@ -58,5 +58,9 @@ Create a new GitHub repository named `devops-bootcamp-final-project-kamariza` (o
 
 Clone the repository to your local machine using SSH:
 
-```bash
+
+```
 git clone git@github.com:kamariza30/devops-bootcamp-final-project-kamariza.git
+
+```
+
