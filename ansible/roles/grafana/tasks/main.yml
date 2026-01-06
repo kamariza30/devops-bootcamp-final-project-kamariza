@@ -21,24 +21,13 @@
   retries: 3
   delay: 5
 
-- name: Stop existing Grafana container
-  docker_container:
-    name: "{{ grafana_container_name }}"
-    state: stopped
-  ignore_errors: yes
-
-- name: Remove existing Grafana container
-  docker_container:
-    name: "{{ grafana_container_name }}"
-    state: absent
-  ignore_errors: yes
-
 - name: Create and start Grafana container
   docker_container:
     name: "{{ grafana_container_name }}"
     image: "{{ grafana_image }}:{{ grafana_version }}"
     state: started
     restart_policy: always
+    recreate: no
     ports:
       - "{{ grafana_port }}:3000"
     volumes:
