@@ -45,7 +45,8 @@
 - name: Create and start Prometheus container
   docker_container:
     name: "{{ prometheus_container_name }}"
-    image: "{{ prometheus_image }}:{{ prometheus_version }}"
+    image: "{{ prometheus_image }}"
+    tag: "{{ prometheus_version }}"
     state: started
     restart_policy: always
     ports:
