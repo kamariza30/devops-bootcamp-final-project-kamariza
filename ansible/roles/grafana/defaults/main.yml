@@ -6,3 +6,4 @@ grafana_container_name: grafana
 grafana_data_dir: /data/grafana
 grafana_admin_user: admin
 grafana_admin_password: kamaftw123  # Change this!
+monitoring_server_ip: 10.0.0.136

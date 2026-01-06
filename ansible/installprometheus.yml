@@ -2,10 +2,5 @@
 - name: Deploy Prometheus on Monitoring Server
   hosts: monitoring
   become: yes
-
-  vars:
-    monitoring_server_ip: 10.0.0.136
-    web_server_ip: 10.0.0.5 
-
   roles:
     - prometheus

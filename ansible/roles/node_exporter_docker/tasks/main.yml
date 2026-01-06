@@ -38,15 +38,3 @@
     networks:
       - name: bridge
 
-- name: Verify Node Exporter is running
-  uri:
-    url: "http://localhost:{{ node_exporter_port }}/metrics"
-    status_code: 200
-  register: result
-  retries: 5
-  delay: 2
-  until: result.status == 200
-
-- name: Display Node Exporter metrics
-  debug:
-    msg: "✅ Node Exporter is running at http://localhost:{{ node_exporter_port }}/metrics"
