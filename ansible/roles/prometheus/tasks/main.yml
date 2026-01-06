@@ -21,7 +21,6 @@
     src: prometheus.yml.j2
     dest: "{{ prometheus_config_dir }}/prometheus.yml"
     mode: '0644'
-  notify: restart prometheus
 
 - name: Pull Prometheus Docker image
   docker_image:

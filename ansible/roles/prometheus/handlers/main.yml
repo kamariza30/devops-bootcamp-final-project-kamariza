@@ -1,5 +1,1 @@
 ---
-- name: restart prometheus
-  docker_container:
-    name: "{{ prometheus_container_name }}"
-    state: restarted
