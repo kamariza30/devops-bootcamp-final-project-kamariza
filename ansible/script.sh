@@ -9,10 +9,10 @@ sudo apt install -y pipx
 
 # Ensure pipx is on PATH for this script (for Ubuntu, it usually installs to /usr/bin/pipx)
 # Install Ansible with pipx
-pipx install --include-deps ansible
+sudo pipx install --include-deps ansible
 
 # Configure PATH for future shells
-pipx ensurepath
+sudo pipx ensurepath
 
 # Verify installation
 ansible --version
