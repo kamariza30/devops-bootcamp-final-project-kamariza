@@ -15,10 +15,11 @@
 
 - name: Pull Grafana Docker image
   docker_image:
-    name: "{{ grafana_image }}"
-    tag: "{{ grafana_version }}"
-    state: present
+    name: "{{ grafana_image }}:{{ grafana_version }}"
     source: pull
+  become: yes
+  retries: 3
+  delay: 5
 
 - name: Stop existing Grafana container
   docker_container:
@@ -35,8 +36,7 @@
 - name: Create and start Grafana container
   docker_container:
     name: "{{ grafana_container_name }}"
-    image: "{{ grafana_image }}"
-    tag: "{{ grafana_version }}"
+    image: "{{ grafana_image }}:{{ grafana_version }}"
     state: started
     restart_policy: always
     ports:
