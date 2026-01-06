@@ -58,19 +58,5 @@ Create a new GitHub repository named `devops-bootcamp-final-project-kamariza` (o
 
 Clone the repository to your local machine using SSH:
 
-
+```bash
 git clone git@github.com:kamariza30/devops-bootcamp-final-project-kamariza.git
-
-Create Project Structure
-Inside the cloned repository, create the following directory structure:
-devops-bootcamp-final-project-kamariza/
-├── terraform/
-├── ansible/
-└── README.md
-
-Open Project in VS Code
-Navigate to the project directory in your terminal and open VS Code:
-cd Documents/devops-bootcamp-final-project-kamariza/
-code .
-
-This opens the project directory in VS Code, ready for development.
