@@ -57,4 +57,3 @@ output "ansible_server_instance_id" {
 output "ecr_registry_id" {
   value = aws_ecr_repository.final_project.id
 }
-###

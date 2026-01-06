@@ -105,3 +105,74 @@ Navigate to the project directory in your terminal and open VS Code:
 cd Documents/devops-bootcamp-final-project-kamariza/
 code .
 ```
+### Install Docker on Ubuntu
+
+Quick Installation
+For detailed step-by-step instructions, visit the official Docker documentation:
+[Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+
+### Install terraform on Ubuntu
+
+For complete installation instructions across all operating systems, visit the official HashiCorp documentation:
+[Install Terraform](https://developer.hashicorp.com/terraform/install)
+
+### Install Ansible
+
+Installation Steps
+Update your system packages:
+```
+sudo apt update && sudo apt upgrade -y
+```
+Install pipx (Python package manager):
+```
+sudo apt install pipx
+```
+Ensure pipx binaries are in your PATH:
+```
+pipx ensurepath
+```
+After installation, verify that Ansible is installed correctly by checking its version:
+```
+ansible --version
+```
+This command will display the installed Ansible version and Python interpreter details.
+
+Note: You may need to log out and log back in, or open a new terminal window for the ```pipx ensurepath``` changes to take effect.
+
+### Create Your First Terraform File
+
+#### Step 1: Open VS Code
+Navigate to your project directory and open VS Code:
+```
+cd Documents/devops-bootcamp-final-project-kamariza/
+code .
+```
+#### Step 2: Create main.tf in Terraform Folder
+1. In the VS Code file explorer, navigate to the ```terraform/``` folder
+2. Right-click inside the terraform/ folder and select New File
+3. Name the file ```main.tf```
+#### Step3: Add Terraform Configuration
+Copy and paste the following code into your ```main.tf``` file and save the file (```Ctrl+S```):
+```
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.25.0"
+    }
+  }
+}
+```
+Your project structure should now look like this:
+```
+devops-bootcamp-final-project-kamariza/
+├── terraform/
+│   └── main.tf
+├── ansible/
+└── README.md
+```
+#### What this code does
+This Terraform configuration block:
+- Specifies the required provider (AWS)
+- Sets the source to HashiCorp's official AWS provider
+- Locks the AWS provider version to 6.25.0 for consistency and reproducibility
