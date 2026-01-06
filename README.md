@@ -67,6 +67,20 @@ Verify Git installation
 ```
 git --version
 ```
+#### Configure Git After Installation
+
+After installing Git on any operating system, configure your username and email:
+```
+git config --global user.name "your-github-username"
+git config --global user.email "your-github-email@example.com"
+```
+Replace ```your-github-username``` and ```your-github-email@example.com``` with your actual GitHub credentials.
+
+Verify your configuration:
+```
+git config --global --list
+```
+This should display your username and email.
 
 #### Clone Repository Locally
 
