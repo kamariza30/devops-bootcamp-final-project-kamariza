@@ -248,6 +248,12 @@ terraform {
     }
   }
 }
+
+provider "aws" {
+  region  = "ap-southeast-1"
+  profile = "default"
+}
+
 ```
 Your project structure should now look like this:
 ```
@@ -262,3 +268,138 @@ This Terraform configuration block:
 - Specifies the required provider (AWS)
 - Sets the source to HashiCorp's official AWS provider
 - Locks the AWS provider version to 6.25.0 for consistency and reproducibility
+#### Step 4: Initialize Terraform
+Open a terminal in VS Code (Terminal > New Terminal) and run:
+```
+cd terraform
+terraform init
+```
+This command will:
+
+- Download the AWS provider plugin (version 6.25.0)
+- Create a .terraform/ directory with provider files
+- Generate a .terraform.lock.hcl file to lock dependency versions
+
+Expected output:
+```
+Initializing the backend...
+Initializing provider plugins...
+- Finding hashicorp/aws versions matching "6.25.0"...
+- Installing hashicorp/aws v6.25.0...
+- Installed hashicorp/aws v6.25.0 (...)
+
+Terraform has been successfully initialized!
+```
+### Create Terraform Variables File
+
+#### Step 1: Create variables.tf
+In VS Code, inside the ```terraform/``` folder:
+
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```variables.tf```
+#### Step 2: Add Variable Definitions
+Copy and paste the following code into ```variables.tf```:
+```
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "cidr_block" {
+  description = "VPC CIDR block"
+  type        = string
+  default     = "10.0.0.0/24"
+}
+```
+Variable explanations:
+
+- instance_type — Defines the EC2 instance size (t3.micro is Free Tier eligible)
+- idr_block — Defines the VPC IP address range (10.0.0.0/24 provides 256 IP addresses)
+#### Current Folder Structure
+After creating both files, your ```terraform/``` folder structure should look like this:
+```
+devops-bootcamp-final-project-kamariza/
+├── terraform/
+│   ├── main.tf
+│   └── variables.tf
+├── ansible/
+└── README.md
+```
+
+### Create IAM Configuration File
+
+#### Step 1: Create iam.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```iam.tf```
+#### Step 2: Add IAM Resources
+Copy and paste the following code into ```iam.tf```:
+```
+data "aws_iam_policy_document" "ec2_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "ec2_ssm_role" {
+  name               = "instance_role"
+  path               = "/system/"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "es2_ssm_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+# Add ECR Pull Only policy. This allows EC2 instances to pull images from ECR.
+resource "aws_iam_role_policy_attachment" "ec2_ecr_pull_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPullOnly"
+}
+
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "bootcamp-ec2-ssm-profile"
+  role = aws_iam_role.ec2_ssm_role.name
+}
+```
+#### Code Explanation
+
+- **Data Block**: ```ec2_assume_role_policy```
+Defines a trust policy allowing EC2 service to assume the IAM role.
+- **Resource**: ```aws_iam_role```
+Creates an IAM role named ```instance_role``` that EC2 instances can assume.
+- **Resource**: ```aws_iam_role_policy_attachment``` (SSM Policy)
+Attaches the ```AmazonSSMManagedInstanceCore``` managed policy to enable AWS Systems Manager Session Manager access for secure instance management without SSH keys.
+- **Resource**: ```aws_iam_role_policy_attachment``` (ECR Policy)
+Attaches the ```AmazonEC2ContainerRegistryPullOnly``` managed policy, allowing EC2 instances to pull Docker images from Amazon ECR.
+- **Resource**: ```aws_iam_instance_profile```
+Creates an instance profile that links the IAM role to EC2 instances, enabling the instances to assume the role and access SSM and ECR.
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── iam.tf
+├── ansible/
+└── README.md
+```
+#### Validate Configuration
+Test your Terraform configuration:
+```
+terraform validate
+```
+You should see:
+```
+Success! The configuration is valid.
+
+```
