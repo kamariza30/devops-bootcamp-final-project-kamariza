@@ -26,6 +26,8 @@ jobs:
             --instance-ids ${{ secrets.ANSIBLE_CONTROLLER_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
+              "sudo apt-get update",
+              "sudo apt-get install -y git",
               "mkdir -p ~/ansible-playbooks",
               "cd ~/ansible-playbooks",
               "rm -rf final-project-kamariza || true",
