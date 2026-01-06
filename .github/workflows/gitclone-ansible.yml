@@ -26,9 +26,6 @@ jobs:
             --instance-ids ${{ secrets.ANSIBLE_CONTROLLER_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
-              "mkdir ansible-playbooks",
-              "cd ansible-playbooks",
-              "rm -rf final-project-kamariza || true",
               "git clone --no-checkout --depth=1 https://github.com/kamariza30/final-project-kamariza.git",
               "cd final-project-kamariza",
               "git sparse-checkout init --cone",
