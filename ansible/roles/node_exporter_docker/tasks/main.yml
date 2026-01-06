@@ -2,22 +2,11 @@
 # tasks file for roles/node_exporter_docker
 - name: Pull Node Exporter Docker image
   docker_image:
-    name: "{{ node_exporter_image }}"
-    tag: "{{ node_exporter_version }}"
+    name: "{{ node_exporter_image }}:{{ node_exporter_version }}"
     state: present
     source: pull
-
-- name: Stop existing Node Exporter container
-  docker_container:
-    name: "{{ node_exporter_container_name }}"
-    state: stopped
-  ignore_errors: yes
-
-- name: Remove existing Node Exporter container
-  docker_container:
-    name: "{{ node_exporter_container_name }}"
-    state: absent
-  ignore_errors: yes
+  retries: 3
+  delay: 5
 
 - name: Create Node Exporter Docker container
   docker_container:
@@ -26,6 +15,7 @@
     tag: "{{ node_exporter_version }}"
     state: started
     restart_policy: always
+    recreate: no
     ports:
       - "{{ node_exporter_port }}:9100"
     volumes:

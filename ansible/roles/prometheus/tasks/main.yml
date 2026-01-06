@@ -25,30 +25,19 @@
 
 - name: Pull Prometheus Docker image
   docker_image:
-    name: "{{ prometheus_image }}"
-    tag: "{{ prometheus_version }}"
+    name: "{{ prometheus_image }}:{{ prometheus_version }}"
     state: present
     source: pull
-
-- name: Stop existing Prometheus container
-  docker_container:
-    name: "{{ prometheus_container_name }}"
-    state: stopped
-  ignore_errors: yes
-
-- name: Remove existing Prometheus container
-  docker_container:
-    name: "{{ prometheus_container_name }}"
-    state: absent
-  ignore_errors: yes
+  retries: 3
+  delay: 5
 
 - name: Create and start Prometheus container
   docker_container:
     name: "{{ prometheus_container_name }}"
-    image: "{{ prometheus_image }}"
-    tag: "{{ prometheus_version }}"
+    image: "{{ prometheus_image }}:{{ prometheus_version }}"
     state: started
     restart_policy: always
+    recreate: no
     ports:
       - "{{ prometheus_port }}:9090"
     volumes:
