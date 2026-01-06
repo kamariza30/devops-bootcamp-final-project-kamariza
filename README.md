@@ -63,4 +63,11 @@ Clone the repository to your local machine using SSH:
 git clone git@github.com:kamariza30/devops-bootcamp-final-project-kamariza.git
 
 ```
-
+Create Project Structure
+Inside the cloned repository, create the following directory structure:
+```
+devops-bootcamp-final-project-kamariza/
+├── terraform/
+├── ansible/
+└── README.md
+```
