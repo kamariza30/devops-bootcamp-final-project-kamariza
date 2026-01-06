@@ -13,6 +13,8 @@ This project demonstrates proficiency across the full DevOps lifecycle:
 
 ## Project Scope and Architecture
 
+![Project Architecture](./images/architecture.jpg)
+
 ### Infrastructure and Deployment Focus
 
 All AWS infrastructure is provisioned declaratively using Terraform, ensuring repeatable and version-controlled deployments. Server configuration is managed entirely through Ansible playbooks, enabling consistent and idempotent infrastructure state across all environments. The project prioritizes infrastructure automation and deployment orchestration rather than application development.
@@ -33,6 +35,7 @@ The following tools and accounts are required to complete this project:
 - **Git** - Version control system installed on your local machine for cloning repositories and managing code
 - **Docker** — Container runtime installed locally for building and testing Docker images
 - **Ansible** — Configuration management tool installed locally for playbook development and testing
+- **AWS CLI** — Command-line tool for managing AWS resources programmatically from your terminal
 
 ### Development Environment Setup
 
@@ -139,6 +142,89 @@ This command will display the installed Ansible version and Python interpreter d
 
 Note: You may need to log out and log back in, or open a new terminal window for the ```pipx ensurepath``` changes to take effect.
 
+### AWS CLI Installation and Configuration
+
+Update system packages and install dependencies:
+```
+sudo apt update
+sudo apt install -y curl unzip
+```
+Download the installer package:
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+```
+Unzip the installer:
+```
+unzip awscliv2.zip
+```
+Run the install script:
+```
+sudo ./aws/install
+```
+Verify the installation:
+```
+aws --version
+```
+Configure AWS CLI
+After installing AWS CLI, configure it with your AWS credentials:
+```
+aws configure
+```
+This command will prompt you for:
+
+1. AWS Access Key ID — Enter your access key
+2. AWS Secret Access Key — Enter your secret key
+3. Default region name — Enter your preferred AWS region
+4. Default output format — Enter output format
+
+Follow the next steps to generate the required values for AWS CLI configuration
+
+### Creating the AWS CLI User for Terraform
+
+#### Step 1: Navigate to IAM in AWS Console
+Open the AWS [Management Console](https://console.aws.amazon.com/) and search for "IAM" to access the Identity and Access Management service.
+#### Step 2: Access the Users Section
+In the IAM dashboard, select Users from the left sidebar, then click Create user.
+#### Step 3: Name the User
+Enter ```terraform-user``` as the username for this IAM identity, then click Next.
+#### Step 4: Attach Administrative Permissions
+On the permissions page, select Attach policies directly and search for AdministratorAccess. Check the box next to this managed policy.
+Click Next, review the configuration, then click Create user.
+#### Step 5: Generate Access Keys
+After the user is created:
+1. Click on the terraform-user username to open the user details page
+2. Select the Security credentials tab
+3. Scroll to Access keys section and click Create access key
+4. Select Command Line Interface (CLI) as the use case
+4. Check the acknowledgment box and click Create access key
+#### Step 6: Copy Your Access Keys
+A modal will display your access key credentials:
+- Access Key ID — Copy this value
+
+- Secret Access Key — Copy this value
+
+Important: Store these credentials securely. This is the only time AWS will display your secret access key. You cannot retrieve it later.
+
+Click Download .csv file to save the credentials locally (recommended for backup).
+#### Step 7: Use Credentials with AWS CLI
+Once you have copied your access keys, configure AWS CLI:
+```
+aws configure
+```
+When prompted, enter:
+```
+AWS Access Key ID [None]: <paste your Access Key ID>
+AWS Secret Access Key [None]: <paste your Secret Access Key>
+Default region name [None]: ap-southeast-1
+Default output format [None]: json
+```
+#### Step 8: Verify Configuration
+Test your AWS CLI setup:
+```
+aws sts get-caller-identity --output table
+```
+If the command executes successfully and displays your account details, your AWS CLI is properly configured and authenticated. This confirms that your access keys are valid and your Terraform user has the necessary permissions.
+
 ### Create Your First Terraform File
 
 #### Step 1: Open VS Code
@@ -152,7 +238,7 @@ code .
 2. Right-click inside the terraform/ folder and select New File
 3. Name the file ```main.tf```
 #### Step3: Add Terraform Configuration
-Copy and paste the following code into your ```main.tf``` file and save the file (```Ctrl+S```):
+Copy and paste the following code into your ```main.tf``` file and save the file (```Ctrl+s```):
 ```
 terraform {
   required_providers {
