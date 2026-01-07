@@ -26,8 +26,8 @@ jobs:
             --instance-ids ${{ secrets.ANSIBLE_CONTROLLER_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
-              "git clone --filter=blob:none --sparse https://github.com/kamariza30/final-project-kamariza.git",
-              "cd final-project-kamariza",
+              "git clone --filter=blob:none --sparse https://github.com/kamariza30/devops-bootcamp-final-project-kamariza.git",
+              "cd devops-bootcamp-final-project-kamariza",
               "git sparse-checkout set ansible",
               "echo \"✓ Ansible folder synced successfully at $(date)\"",
               "ls -la"
