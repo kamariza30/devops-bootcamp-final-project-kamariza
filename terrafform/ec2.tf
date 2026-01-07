@@ -111,6 +111,9 @@ resource "aws_security_group" "private_sg" {
 
                 chmod 600 /home/ubuntu/.ssh/ansible-key.pem
                 chown ubuntu:ubuntu /home/ubuntu/.ssh -R
+
+                apt update && apt upgrade -y
+                apt install -y ansible
                 EOF
 
     tags = {

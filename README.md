@@ -644,3 +644,268 @@ Uses the ```templatefile()``` function to dynamically generate an Ansible invent
 2. ```instances``` — Array of all EC2 instances (web, ansible, monitoring)
 3. ```filename``` — Output location: ```../ansible/inventory.ini```
 
+**Template Login (inventory.tftpl)**
+
+```[web]``` **group:**
+- Loops through all instances
+- Filters for instances with tag ```Name == "web"```
+
+```[monitoring]``` **group:**
+- Loops through all instances
+- Filters for instances with tag ```Name == "monitoring"```
+- Creates inventory entry with hostname and private IP
+
+```[all:vars]``` **section:**
+- ```ansible_user=ubuntu``` — SSH user for all instances
+- ```ansible_ssh_private_key_file``` — Path to private key on Ansible controller
+- ```ansible_python_interpreter``` — Python 3 interpreter path on managed nodes
+
+When you run ```terraform apply:```
+1. Terraform reads the EC2 instance data (private IPs, tags)
+2. Processes the inventory.tftpl template with instance data
+3. Generates ```ansible/inventory.ini``` automatically
+
+### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── ecr.tf
+│   ├── inventory.tf
+│   └── inventory.tftpl
+├── ansible/
+└── README.md
+```
+
+### Create Output Configuration File
+#### Step 1: Create output.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```output.tf```
+#### Step 2: Add Data Source and Outputs
+Copy and paste my code into ```output.tf:```
+```
+# Get current AWS account information
+data "aws_caller_identity" "current" {}
+
+# Output AWS Account ID
+output "account_id" {
+  value = data.aws_caller_identity.current.account_id
+}
+
+# Output caller ARN
+output "caller_arn" {
+  value = data.aws_caller_identity.current.arn
+}
+
+# Output web server public IP
+output "web_server_public_ip" {
+  value = aws_instance.web_server.public_ip
+}
+
+# Output Ansible server private IP
+output "ansible_server_private_ip" {
+  value = aws_instance.ansible_server.private_ip
+}
+
+# Output monitoring server private IP
+output "monitoring_server_private_ip" {
+  value = aws_instance.monitoring_server.private_ip
+}
+
+# Output web server instance ID (for GitHub Actions secret)
+output "WEB_INSTANCE_ID" {
+  value = aws_instance.web_server.id
+}
+
+# Output Ansible controller instance ID (for GitHub Actions secret)
+output "ANSIBLE_CONTROLLER_INSTANCE_ID" {
+  value = aws_instance.ansible_server.id
+}
+
+# Output ECR registry URL (for GitHub Actions secret)
+output "ECR_REGISTRY" {
+  value = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+}
+
+# Output ECR repository name (for GitHub Actions secret)
+output "ECR_REPOSITORY" {
+  value = aws_ecr_repository.final_project.name
+}
+```
+#### Step 3: Add AWS Region Variable
+You need to add the ```aws_region``` variable to your ```variables.tf``` file. Open ```variables.tf``` and add:
+```
+variable "aws_region" {
+  description = "AWS region for deployment"
+  type        = string
+  default     = "ap-southeast-1"
+}
+```
+### GitHub Secrets (Required for CI/CD):
+
+- ```WEB_INSTANCE_ID``` — Instance ID of web server (for GitHub Actions deployment)
+- ```ANSIBLE_CONTROLLER_INSTANCE_ID``` — Instance ID of Ansible controller
+- ```ECR_REGISTRY``` — ECR registry URL format: ```ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com```
+- ```ECR_REPOSITORY``` — Repository path: ```devops-bootcamp/final-project-kamariza```
+### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── ecr.tf
+│   ├── inventory.tf
+│   ├── inventory.tftpl
+│   └── output.tf
+├── ansible/
+└── README.md
+```
+### Run Terraform Plan and Apply
+#### Step 1: Run Terraform Plan
+In your terminal, navigate to the terraform directory and run:
+```
+cd terraform
+terraform plan
+```
+This command will show you all the resources Terraform will create. Review the output to ensure everything looks correct.
+#### Step 2: Run Terraform Apply
+After reviewing the plan, apply the configuration:
+```
+terraform apply -auto-approve
+```
+This command will:
+
+- Create all AWS resources (VPC, subnets, EC2 instances, security groups, IAM roles, ECR repository, S3 bucket, SSH keys)
+- Generate the ```ansible/inventory.ini``` file
+- Generate the ```ansible/ansible-key.pem``` file
+- Display all outputs
+#### Step 3: Copy the Required Outputs
+After ```terraform apply``` completes successfully, you'll see output similar to this:
+```
+Outputs:
+
+account_id = "123456789012"
+caller_arn = "arn:aws:iam::123456789012:user/terraform-user"
+web_server_public_ip = "54.123.45.67"
+ansible_server_private_ip = "10.0.0.135"
+monitoring_server_private_ip = "10.0.0.136"
+WEB_INSTANCE_ID = "i-0abc123def456xyz"
+ANSIBLE_CONTROLLER_INSTANCE_ID = "i-0xyz789abc123def"
+ECR_REGISTRY = "123456789012.dkr.ecr.ap-southeast-1.amazonaws.com"
+ECR_REPOSITORY = "devops-bootcamp/final-project-kamariza"
+```
+Copy these four values:
+| Variable                        | Example Value                                      |
+|---------------------------------|----------------------------------------------------|
+| `WEB_INSTANCE_ID`              | `i-0abc123def456xyz`                              |
+| `ANSIBLE_CONTROLLER_INSTANCE_ID` | `i-0xyz789abc123def`                            |
+| `ECR_REGISTRY`                 | `123456789012.dkr.ecr.ap-southeast-1.amazonaws.com` |
+| `ECR_REPOSITORY`               | `devops-bootcamp/final-project-kamariza`          |
+
+### Add GitHub Repository Secrets
+#### Step 1: Go to Your GitHub Repository
+1. pen your GitHub repository: ```https://github.com/kamariza30/devops-bootcamp-final-project-kamariza```
+2. Click on the Settings tab at the top of the repository
+#### Step 2: Navigate to Secrets
+In the left sidebar, under Security, click on Secrets and variables → Actions
+#### Step 3: Create Secret for WEB_INSTANCE_ID
+1. Click New repository secret
+2. In the Name field, enter: ```WEB_INSTANCE_ID```
+3. In the Secret field, paste your ```WEB_INSTANCE_ID``` value (e.g., i-0abc123def456xyz)
+3. Click Add secret
+#### Step 4: Create Secret for ANSIBLE_CONTROLLER_INSTANCE_ID
+1. Click New repository secret
+2. In the Name field, enter: ```ANSIBLE_CONTROLLER_INSTANCE_ID```
+3. In the Secret field, paste your ANSIBLE_CONTROLLER_INSTANCE_ID value (e.g., i-0xyz789abc123def)
+#### Step 5: Create Secret for ECR_REGISTRY
+1. Click New repository secret
+2. In the Name field, enter: ```ECR_REGISTRY```
+3. In the Secret field, paste your ECR_REGISTRY value (e.g., 123456789012.dkr.ecr.ap-southeast-1.amazonaws.com)
+4. Click Add secret
+#### Step 6: Create Secret for ECR_REPOSITORY
+1. Click New repository secret
+2. In the Name field, enter: ```ECR_REPOSITORY```
+3. In the Secret field, paste your ECR_REPOSITORY value (e.g., devops-bootcamp/final-project-kamariza)
+4. Click Add secret
+
+### Create GitHub Actions IAM User and Secrets
+### Step 1: Create IAM User in AWS
+1. Go to AWS IAM Console
+2. Click on Users in the left sidebar
+3. Click Create user
+4. Enter username: ```github-action-user```
+5. Click Next
+#### Step 2: Attach Inline Policy
+1. On the permissions page, select Attach policies directly
+2. Click Create inline policy (or paste custom policy)
+3. Choose JSON tab
+4. Replace the default content with the policy below:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "GetAuthorizationToken",
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:BatchGetImage",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:CompleteLayerUpload",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:InitiateLayerUpload",
+                "ecr:PutImage",
+                "ecr:UploadLayerPart"
+            ],
+            "Resource": [
+                "arn:aws:ecr:ap-southeast-1:YOUR_ACCOUNT_ID:repository/devops-bootcamp/final-project-kamariza"
+            ]
+        },
+        {
+            "Sid": "SSMSendCommand",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:SendCommand",
+                "ssm:GetCommandInvocation"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+5. Replace ```YOUR_ACCOUNT_ID``` with your actual AWS account ID (from the Terraform outputs)
+6. Click Review policy
+7. Enter policy name: github-actions-policy
+8. Click Create policy
+9. Click Next → Create user
+
+#### Step 3: Generate Access Keys
+1. Click on the newly created ```github-action-user``` in the Users list
+2. Go to the Security credentials tab
+3. Scroll to Access keys section
+4. Click Create access key
+5. Select Command Line Interface (CLI) as the use case
+6. Check the acknowledgment box
+7. Click Create access key
+8. Copy and add both Access Key id and Secret Access Key to Github secret
