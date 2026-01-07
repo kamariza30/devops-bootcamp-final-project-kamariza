@@ -481,3 +481,166 @@ git commit -m "Add Terraform configuration and .gitignore"
 git push origin main
 ```
 The .gitignore file will prevent sensitive files like ```ansible-key.pem```, Terraform state files (```.tfstate```), and ```.terraform/``` directories from being committed to your repository.
+
+
+### Create VPC Configuration File
+#### Step 1: Create vpc.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```vpc.tf```
+#### Step 2: Add VPC Resources
+Copy and paste my code into ```vpc.tf```:
+
+#### Code Explanation
+**VPC & Subnets:**
+- **aws_vpc** — Creates a VPC with CIDR block from var.cidr_block (10.0.0.0/24)
+- **aws_subnet (public)** — Creates a public subnet (10.0.0.0/25) for resources with internet access
+- **aws_subnet (private)** — Creates a private subnet (10.0.0.128/25) for secure resources
+
+**Internet Connectivity:**
+- **aws_internet_gateway** — Enables internet access for the VPC
+- **aws_eip** — Allocates a static Elastic IP for the NAT Gateway
+- **aws_nat_gateway** — Allows private subnet resources to access the internet securely
+
+**Routing:**
+- **aws_route_table (public)** — Routes all traffic (0.0.0.0/0) through the Internet Gateway
+- **aws_route_table (private)** — Routes all traffic through the NAT Gateway
+- **aws_route_table_association** — Associates subnets with their respective route tables
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   └── vpc.tf
+├── ansible/
+└── README.md
+```
+### Create EC2 Configuration File
+#### Step 1: Create ec2.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```ec2.tf```
+#### Step 2: Add EC2 Resources
+Copy and paste the code from my ec2.tf
+#### Code Explanation
+**Security Groups**
+
+**Web Server Security Group** (```web_sg```):
+- Port 80 (HTTP) — Open to the internet for web traffic
+- Port 22 (SSH) — Open to VPC CIDR for secure access
+- Port 9100 (Node Exporter) — Open to VPC for Prometheus metrics collection
+- Egress — Allows all outbound traffic
+
+**Ansible Controller** (```ansible_server```):
+- Located in private subnet (no public IP)
+- Runs user_data script to copy the ansible-key.pem
+
+**Monitoring Server** (```monitoring_server```):
+- Located in private subnet
+- Hosts Prometheus and Grafana for monitoring
+- Accessible only from within the VPC
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   └── ec2.tf
+├── ansible/
+└── README.md
+```
+### Create S3 Configuration File
+#### Step 1: Create s3.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```s3.tf```
+
+#### Step 2: Add S3 Resources
+Copy and paste my code into s3.tf:
+
+#### Code Explanation
+**Resource:** ```aws_s3_bucket```
+Creates an S3 bucket for storing your Terraform state file.
+
+**Key attributes:**
+- ```bucket``` — Globally unique bucket name (S3 bucket names must be unique across all AWS accounts)
+
+- ```force_destroy = true``` — Allows Terraform to delete the bucket even if it contains objects, useful for cleanup during testing
+
+**Resource:** ```aws_s3_bucket_versioning```
+Enables versioning on the S3 bucket to maintain a history of all file versions.
+
+**Key attributes:**
+- ```status = "Enabled"``` — Keeps previous versions of objects, allowing you to recover deleted or overwritten files
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   └── s3.tf
+├── ansible/
+└── README.md
+```
+After all infrastructure is provisioned, you can configure Terraform to store its state file in this S3 bucket for remote state management and team collaboration.
+
+### Create ECR Configuration File
+#### Step 1: Create ecr.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```ecr.tf```
+### Step 2: Add ECR Repository
+Copy and paste my code into ```ecr.tf```
+### Code Explanation
+**Resource:** ```aws_ecr_repository```
+Creates an Amazon Elastic Container Registry (ECR) repository for storing Docker images.
+
+**Key attributes:**
+- ```name``` — Repository name following the format namespace/repository-name
+- ```force_delete = true``` — Allows Terraform to delete the repository even if it contains images, useful for cleanup
+- ```image_scanning_configuration``` — Scans images for security vulnerabilities
+- ```scan_on_push = true``` — Automatically scans images when pushed to the repository
+
+This ECR repository will be used in your CI/CD pipeline:
+
+1. **GitHub Actions (Build & Push)** — Builds Docker images and pushes them to this ECR repository
+
+2. **GitHub Actions (Deploy) — Pulls** images from this ECR repository and deploys to the web server EC2 instance
+
+### Create Ansible inventory Configuration
+#### Step 1: Create inventory.tf and inventory.tftpl
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```inventory.tf``` and ```inventory.tftpl```
+#### Step 2: Add Inventory Template Resource
+1. Copy and paste my code into inventory.tf
+2. Copy and paste my code into inventory.tfpl
+
+#### Code Explantion
+**Resource:** ```local_file``` **(inventory.tf)**
+Uses the ```templatefile()``` function to dynamically generate an Ansible inventory file.
+
+**Key attributes:**
+1. ```templatefile()``` — Processes the template file with variables
+2. ```instances``` — Array of all EC2 instances (web, ansible, monitoring)
+3. ```filename``` — Output location: ```../ansible/inventory.ini```
+

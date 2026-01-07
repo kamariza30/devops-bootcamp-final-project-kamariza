@@ -69,7 +69,7 @@ resource "aws_security_group" "private_sg" {
 
 #below code is to create an EC2 instance in the public subnet
   resource "aws_instance" "web_server" {
-    ami                    = "ami-0ecb62995f68bb549"  # ubuntu 24.04 in us-east-1
+    ami                    = "ami-00d8fc944fb171e29"  # ubuntu 24.04 in ap-southeast-1
     instance_type          = var.instance_type
     subnet_id              = aws_subnet.public.id
     vpc_security_group_ids = [aws_security_group.web_sg.id]
@@ -86,7 +86,7 @@ resource "aws_security_group" "private_sg" {
 
 #below code is to create an ansible server in the private subnet
   resource "aws_instance" "ansible_server" {
-    ami                    = "ami-0ecb62995f68bb549"  # ubuntu 24.04 in us-east-1
+    ami                    = "ami-00d8fc944fb171e29"  # ubuntu 24.04 in ap-southeast-1
     instance_type          = var.instance_type
     subnet_id              = aws_subnet.private.id
     vpc_security_group_ids = [aws_security_group.private_sg.id]
@@ -96,7 +96,7 @@ resource "aws_security_group" "private_sg" {
     iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
     key_name = aws_key_pair.ansible.key_name
 
-#below code is to install ansible on the ansible server using user data
+#below code is to copy ansible-key.pem to ansible server using user data
     user_data_replace_on_change = true
     user_data = <<-EOF
                 #!/bin/bash
@@ -118,9 +118,9 @@ resource "aws_security_group" "private_sg" {
     }
   }
 
-#below code is to create a grafana server in the private subnet
-  resource "aws_instance" "grafana_server" {
-    ami                    = "ami-0ecb62995f68bb549"  # ubuntu 24.04 in us-east-1
+#below code is to create a monitoring server in the private subnet
+  resource "aws_instance" "monitoring_server" {
+    ami                    = "ami-00d8fc944fb171e29"  # ubuntu 24.04 in ap-southeast-1
     instance_type          = var.instance_type
     subnet_id              = aws_subnet.private.id
     vpc_security_group_ids = [aws_security_group.private_sg.id]

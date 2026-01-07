@@ -13,19 +13,6 @@ provider "aws" {
 }
 
 
-#below code is to create an ECR repository for the final project
-resource "aws_ecr_repository" "final_project" {
-  name = "devops-bootcamp/final-project-kamariza"
-  force_delete = true #to delete repository even if it contains images
-
-  image_scanning_configuration {
-    scan_on_push = true
-}
-    tags = {
-        Name = "final-project-registry"
-}
-}
-
 data "aws_caller_identity" "current" {}
 
 output "account_id" {
@@ -42,8 +29,8 @@ output "web_server_public_ip" {
 output "ansible_server_private_ip" {
   value = aws_instance.ansible_server.private_ip
 }
-output "grafana_server_private_ip" {
-  value = aws_instance.grafana_server.private_ip
+output "monitoring_server_private_ip" {
+  value = aws_instance.monitoring_server.private_ip
 }
 output "ecr_repository_url" {
   value = aws_ecr_repository.final_project.repository_url
