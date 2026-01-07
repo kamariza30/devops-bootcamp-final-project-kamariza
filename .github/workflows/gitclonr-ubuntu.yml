@@ -1,4 +1,4 @@
-name: Sync Ansible Folder to Controller
+name: Sync Ansible Folder to ubunru/home
 
 on:
   workflow_dispatch:
