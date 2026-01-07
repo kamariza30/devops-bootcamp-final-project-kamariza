@@ -111,6 +111,14 @@ resource "aws_security_group" "private_sg" {
 
                 chmod 600 /home/ubuntu/.ssh/ansible-key.pem
                 chown ubuntu:ubuntu /home/ubuntu/.ssh -R
+                
+                # For ssm-user
+                mkdir -p /home/ssm-user/.ssh
+                cat > /home/ssm-user/.ssh/ansible-key.pem << 'PRIVKEY'
+                ${tls_private_key.ssh_key.private_key_pem}
+                PRIVKEY
+                chmod 600 /home/ssm-user/.ssh/ansible-key.pem
+                chown ssm-user:ssm-user /home/ssm-user/.ssh -R
 
                 apt update && apt upgrade -y
                 apt install -y ansible
