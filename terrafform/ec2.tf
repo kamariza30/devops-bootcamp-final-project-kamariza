@@ -100,6 +100,10 @@ resource "aws_security_group" "private_sg" {
     user_data_replace_on_change = true
     user_data = <<-EOF
                 #!/bin/bash
+
+                #wait 2 minutes for ssm-user to be created
+                sleep 120
+
                 # create ssh folder
                 mkdir -p /home/ubuntu/.ssh
                 chmod 700 /home/ubuntu/.ssh
@@ -112,7 +116,8 @@ resource "aws_security_group" "private_sg" {
                 chmod 600 /home/ubuntu/.ssh/ansible-key.pem
                 chown ubuntu:ubuntu /home/ubuntu/.ssh -R
                 
-                # For ssm-user
+            
+                # For ssm-user (now should be initialized)
                 mkdir -p /home/ssm-user/.ssh
                 cat > /home/ssm-user/.ssh/ansible-key.pem << 'PRIVKEY'
                 ${tls_private_key.ssh_key.private_key_pem}
@@ -123,6 +128,7 @@ resource "aws_security_group" "private_sg" {
                 apt update && apt upgrade -y
                 apt install -y ansible
                 EOF
+# run sudo chown ssm-user:ssm-user /home/ssm-user/.ssh/ansible-key.pem in ansible server after creation to fix permission issue
 
     tags = {
       Name = "ansible-controller"
