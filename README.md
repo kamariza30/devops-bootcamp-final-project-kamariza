@@ -403,3 +403,81 @@ You should see:
 Success! The configuration is valid.
 
 ```
+- The private key will be automatically generated and saved to ```ansible/ansible-key.pem``` when you run terraform apply
+- This key file will be used later by Ansible to authenticate with EC2 instances
+- The key permissions are set to ```0400``` (read-only) for security
+- Never commit the ```ansible-key.pem``` file to version control — add it to ```.gitignore```
+
+### Create .gitignore File
+
+#### Step 1: Generate .gitignore Content
+1. Go to [https://www.toptal.com/developers/gitignore/](https://www.toptal.com/developers/gitignore/)
+2. In the search field, type ```terraform```
+3. Click Create to generate the .gitignore file
+4. Copy all the content from the generated file
+#### Step 2: Create .gitignore
+In VS Code, at the root of your project (not inside terraform/ folder):
+1. Right-click on the project root folder in the file explorer
+2. Select New File
+3. Name it ```.gitignore``` (note the dot at the beginning)
+#### Step 3: Paste the Content
+Paste the copied content from the gitignore generator into the ```.gitignore``` file.
+The file should contain entries similar to:
+```
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files, which are likely to contain sensitive data
+*.tfvars
+*.tfvars.json
+
+# Ignore override files, as they are usually used to override resources locally
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include override files you do wish to add to version control using negated pattern
+# !example_override.tf
+
+# Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
+*tfplan*
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# Ignore plan files
+*.tfplan
+```
+4. Add entry ansible-key.pem in .gitignore
+```
+ansible/ansible-key.pem
+```
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   └── ssh.tf
+├── ansible/
+└── README.md
+```
+#### Verify .gitignore is Working
+```
+git add .
+git commit -m "Add Terraform configuration and .gitignore"
+git push origin main
+```
+The .gitignore file will prevent sensitive files like ```ansible-key.pem```, Terraform state files (```.tfstate```), and ```.terraform/``` directories from being committed to your repository.
