@@ -45,10 +45,10 @@ jobs:
             --instance-ids ${{ secrets.WEB_INSTANCE_ID }} \
             --document-name "AWS-RunShellScript" \
             --parameters 'commands=[
-              "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}",
+              "aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}",
               "docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest",
               "docker stop final-project || true",
               "docker rm final-project || true",
               "docker run -d -p 80:80 -e USER_NAME=\"KAMARIZA SUHAINI\" --name final-project ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest"
             ]' \
-            --region us-east-1
+            --region ap-southeast-1

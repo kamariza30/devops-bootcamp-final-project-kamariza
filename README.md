@@ -625,65 +625,6 @@ This ECR repository will be used in your CI/CD pipeline:
 
 2. **GitHub Actions (Deploy) — Pulls** images from this ECR repository and deploys to the web server EC2 instance
 
-### Create Ansible inventory Configuration
-#### Step 1: Create inventory.tf and inventory.tftpl
-In VS Code, inside the ```terraform/``` folder:
-1. Right-click on the ```terraform/``` folder
-2. Select New File
-3. Name it ```inventory.tf``` and ```inventory.tftpl```
-#### Step 2: Add Inventory Template Resource
-1. Copy and paste my code into inventory.tf
-2. Copy and paste my code into inventory.tfpl
-
-#### Code Explantion
-**Resource:** ```local_file``` **(inventory.tf)**
-Uses the ```templatefile()``` function to dynamically generate an Ansible inventory file.
-
-**Key attributes:**
-1. ```templatefile()``` — Processes the template file with variables
-2. ```instances``` — Array of all EC2 instances (web, ansible, monitoring)
-3. ```filename``` — Output location: ```../ansible/inventory.ini```
-
-**Template Login (inventory.tftpl)**
-
-```[web]``` **group:**
-- Loops through all instances
-- Filters for instances with tag ```Name == "web"```
-
-```[monitoring]``` **group:**
-- Loops through all instances
-- Filters for instances with tag ```Name == "monitoring"```
-- Creates inventory entry with hostname and private IP
-
-```[all:vars]``` **section:**
-- ```ansible_user=ubuntu``` — SSH user for all instances
-- ```ansible_ssh_private_key_file``` — Path to private key on Ansible controller
-- ```ansible_python_interpreter``` — Python 3 interpreter path on managed nodes
-
-When you run ```terraform apply:```
-1. Terraform reads the EC2 instance data (private IPs, tags)
-2. Processes the inventory.tftpl template with instance data
-3. Generates ```ansible/inventory.ini``` automatically
-
-### Current Folder Structure
-```
-devops-bootcamp-final-project-kamariza/
-├── .gitignore
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── iam.tf
-│   ├── ssh.tf
-│   ├── vpc.tf
-│   ├── ec2.tf
-│   ├── s3.tf
-│   ├── ecr.tf
-│   ├── inventory.tf
-│   └── inventory.tftpl
-├── ansible/
-└── README.md
-```
-
 ### Create Output Configuration File
 #### Step 1: Create output.tf
 In VS Code, inside the ```terraform/``` folder:
@@ -769,8 +710,6 @@ devops-bootcamp-final-project-kamariza/
 │   ├── ec2.tf
 │   ├── s3.tf
 │   ├── ecr.tf
-│   ├── inventory.tf
-│   ├── inventory.tftpl
 │   └── output.tf
 ├── ansible/
 └── README.md
@@ -791,8 +730,6 @@ terraform apply -auto-approve
 This command will:
 
 - Create all AWS resources (VPC, subnets, EC2 instances, security groups, IAM roles, ECR repository, S3 bucket, SSH keys)
-- Generate the ```ansible/inventory.ini``` file
-- Generate the ```ansible/ansible-key.pem``` file
 - Display all outputs
 #### Step 3: Copy the Required Outputs
 After ```terraform apply``` completes successfully, you'll see output similar to this:
@@ -909,4 +846,72 @@ In the left sidebar, under Security, click on Secrets and variables → Actions
 6. Check the acknowledgment box
 7. Click Create access key
 8. Copy and add both Access Key id and Secret Access Key to Github secret
-###
+#### Step 4: Copy Access Keys
+A modal will display your credentials:
+- **Access Key ID** — Copy this value
+- **Secret Access Key** — Copy this value
+#### Step 5: Add Secrets to GitHub Repository
+1. Go to your GitHub repository
+2. Click Settings → Secrets and variables → Actions
+3. Click New repository secret
+4. Name it AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and paste the value respectively
+### Configure Terraform S3 Backend
+#### Step 1: Create backend.tf
+In VS Code, inside the ```terraform/``` folder:
+1. Right-click on the ```terraform/``` folder
+2. Select New File
+3. Name it ```backend.tf```
+#### Step 2: Add Backend Configuration
+Copy and paste my code to backend.tf
+#### Step 3: Plan Terraform Configuration
+Before migrating the state, run terraform plan:
+```
+cd terraform
+terraform plan
+```
+#### Step 4: Migrate State to S3
+Run the following command to migrate your local state file to S3:
+```
+terraform init -migrate-state
+```
+When prompted, confirm the migration:
+```
+Do you want to copy existing state to the new backend?
+```
+Answer: **yes**
+
+This command will:
+- Upload your local ```terraform.tfstate``` to the S3 bucket
+- Configure Terraform to use S3 as the remote backend
+- Create a ```.terraform/terraform.tfstate``` lock file
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── ecr.tf
+│   ├── output.tf
+│   └── backend.tf
+├── ansible/
+└── README.md
+```
+#### Benefits of S3 Backened
+- **Remote State** — State file stored centrally in AWS, not on your local machine
+- **Team Collaboration** — Multiple team members can work on the same infrastructure
+- **State Locking** — Prevents concurrent modifications using DynamoDB
+- **Encryption** — State file encrypted at rest in S3
+- **Versioning** — S3 versioning enabled for state file history
+- **Security** — No sensitive data stored locally on your computer
+#### Commit you backend configuration to Git:
+```
+git add terraform/backend.tf
+git commit -m "Add S3 backend configuration for remote state management"
+git push origin main
+```
