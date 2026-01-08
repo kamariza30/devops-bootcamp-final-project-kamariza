@@ -117,11 +117,10 @@ resource "aws_security_group" "private_sg" {
                 chown ubuntu:ubuntu /home/ubuntu/.ssh -R
                 
             
-                # For ssm-user (now should be initialized)
+                # For ssm-user
                 mkdir -p /home/ssm-user/.ssh
-                cat > /home/ssm-user/.ssh/ansible-key.pem << 'PRIVKEY'
-                ${tls_private_key.ssh_key.private_key_pem}
-                PRIVKEY
+                cp /home/ubuntu/.ssh/ansible-key.pem /home/ssm-user/.ssh/
+                chown ssm-user:ssm-user /home/ssm-user/.ssh/ansible-key.pem
                 chmod 600 /home/ssm-user/.ssh/ansible-key.pem
                 chown ssm-user:ssm-user /home/ssm-user/.ssh -R
 
