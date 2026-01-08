@@ -1,11 +1,6 @@
 name: Sync Ansible Folder to Controller
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'ansible/**'
-      - '.github/workflows/gitclone-ansible.yml'
   workflow_dispatch:
 
 jobs:
