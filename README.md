@@ -915,3 +915,205 @@ git add terraform/backend.tf
 git commit -m "Add S3 backend configuration for remote state management"
 git push origin main
 ```
+
+### Create Ansible Inventory File
+#### Step 1: Create inventory.ini
+In VS Code, inside the ```ansible/``` folder:
+1. Right-click on the ```ansible/``` folder
+2. Select New File
+3. Name it ```inventory.ini```
+#### Step 2: Add Inventory Content
+Copy and paste the following code into ```inventory.ini:```
+```
+[web]
+web ansible_host=10.0.0.5
+
+[monitoring]
+monitoring ansible_host=10.0.0.136
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/ssm-user/.ssh/ansible-key.pem
+ansible_python_interpreter=/usr/bin/python3
+```
+#### Code Explanation
+**Inventory Groups**
+
+```[web]```group:
+- Contains the web server instance
+- ```web``` — Host alias for the web server
+- ```ansible_host=10.0.0.5``` — Private IP address of the web server EC2 instance
+
+```[monitoring]``` group:
+
+Contains the monitoring server instance
+- ```monitoring``` — Host alias for the monitoring server
+- ```ansible_host=10.0.0.136``` — Private IP address of the monitoring server EC2 instance
+
+Global Variables ```[all:vars]```
+
+- ```ansible_user=ubuntu``` — SSH user for all instances (Ubuntu default user)
+- ```ansible_ssh_private_key_file=/home/ssm-user/.ssh/ansible-key.pem``` — Path to private SSH key on Ansible controller
+- ```ansible_python_interpreter=/usr/bin/python3``` — Python 3 interpreter path on managed nodes
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── ecr.tf
+│   ├── output.tf
+│   └── backend.tf
+├── ansible/
+│   └── inventory.ini
+└── README.md
+```
+### Create Ansible Configuration File
+#### Step 1: Create ansible.cfg
+In VS Code, inside the ```ansible/``` folder:
+1. Right-click on the ```ansible/``` folder
+2. Select New File
+3. Name it ```ansible.cfg```
+#### Step 2: Add Ansible Configuration
+Copy and paste the following code into ```ansible.cfg```:
+```
+[defaults]
+inventory = inventory.ini
+host_key_checking = False
+remote_user = ubuntu
+private_key_file = /home/ssm-user/.ssh/ansible-key.pem
+timeout = 10
+become = True
+```
+#### Code Explanation
+
+**Configuration Options**
+
+- ```inventory = inventory.ini``` — Default inventory file location (no need to specify -i flag in commands)
+- ```host_key_checking = False``` — Disables SSH host key verification (useful for new instances, but be cautious in production)
+- ```remote_user = ubuntu``` — Default SSH user (overrides need to specify -u flag)
+- ```private_key_file = /home/ssm-user/.ssh/ansible-key.pem``` — Default private key location for SSH authentication
+- ```timeout = 10``` — SSH connection timeout in seconds
+- ```become = True``` — Automatically use privilege escalation (sudo) for tasks requiring root access
+
+### Create Ansible Roles
+#### Step 1: Initialize Ansible Roles
+In your terminal, navigate to the ```ansible/``` folder and run the following commands to create role directories:
+```
+cd ansible
+ansible-galaxy init roles/awscli
+ansible-galaxy init roles/grafana
+ansible-galaxy init roles/node_exporter_docker
+ansible-galaxy init roles/prometheus
+```
+Each command creates a role with the standard Ansible role directory structure.
+#### Step 2: Verify Role Structure
+After running the commands, your ```ansible/``` folder will have this structure:
+```
+ansible/
+├── inventory.ini
+├── ansible.cfg
+└── roles/
+    ├── awscli/
+    │   ├── defaults/
+    │   │   └── main.yml
+    │   ├── files/
+    │   ├── handlers/
+    │   │   └── main.yml
+    │   ├── meta/
+    │   │   └── main.yml
+    │   ├── tasks/
+    │   │   └── main.yml
+    │   ├── templates/
+    │   ├── tests/
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars/
+    │       └── main.yml
+    ├── grafana/
+    │   ├── defaults/
+    │   │   └── main.yml
+    │   ├── files/
+    │   ├── handlers/
+    │   │   └── main.yml
+    │   ├── meta/
+    │   │   └── main.yml
+    │   ├── tasks/
+    │   │   └── main.yml
+    │   ├── templates/
+    │   ├── tests/
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars/
+    │       └── main.yml
+    ├── node_exporter_docker/
+    │   ├── defaults/
+    │   │   └── main.yml
+    │   ├── files/
+    │   ├── handlers/
+    │   │   └── main.yml
+    │   ├── meta/
+    │   │   └── main.yml
+    │   ├── tasks/
+    │   │   └── main.yml
+    │   ├── templates/
+    │   ├── tests/
+    │   │   ├── inventory
+    │   │   └── test.yml
+    │   └── vars/
+    │       └── main.yml
+    └── prometheus/
+        ├── defaults/
+        │   └── main.yml
+        ├── files/
+        ├── handlers/
+        │   └── main.yml
+        ├── meta/
+        │   └── main.yml
+        ├── tasks/
+        │   └── main.yml
+        ├── templates/
+        ├── tests/
+        │   ├── inventory
+        │   └── test.yml
+        └── vars/
+            └── main.yml
+```
+
+#### Structure Explanation
+Each role contains these key directories:
+
+- ```tasks/main.yml``` — Contains the main tasks executed by this role
+- ```handlers/main.yml``` — Contains handlers triggered by tasks (e.g., restart services)
+- ```vars/main.yml``` — Role-specific variables
+- ```defaults/main.yml``` — Default variables (lowest precedence)
+- ```templates/``` — Jinja2 templates for configuration files
+- ```files/``` — Static files to copy to remote hosts
+- ```meta/main.yml``` — Role metadata and dependencies
+- ```tests/``` — Testing configuration
+
+#### Role Proposes
+awscli
+- Install AWS CLI on instances
+- Configure AWS credentials for programmatic access
+
+grafana
+- Run Grafana as Docker container
+- Configure data sources (Prometheus)
+- Set up dashboards for visualization
+
+node_exporter_docker
+- Run Node Exporter as a Docker container
+- Exposes metrics on port 9100 for Prometheus collection
+
+prometheus
+- Run Prometheus as Docker container
+- Configure Prometheus to scrape metrics from Node Exporter
+- Set up data retention policies
