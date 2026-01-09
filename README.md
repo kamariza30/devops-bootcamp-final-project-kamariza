@@ -812,23 +812,33 @@ Copy these four values:
 ### Add GitHub Repository Secrets
 #### Step 1: Go to Your GitHub Repository
 1. pen your GitHub repository: ```https://github.com/kamariza30/devops-bootcamp-final-project-kamariza```
-2. Click on the Settings tab at the top of the repository
+2. Click on the Settings tab at the top of the repository  
+
+
 #### Step 2: Navigate to Secrets
-In the left sidebar, under Security, click on Secrets and variables → Actions
+In the left sidebar, under Security, click on Secrets and variables → Actions  
+
+
 #### Step 3: Create Secret for WEB_INSTANCE_ID
 1. Click New repository secret
 2. In the Name field, enter: ```WEB_INSTANCE_ID```
 3. In the Secret field, paste your ```WEB_INSTANCE_ID``` value (e.g., i-0abc123def456xyz)
-3. Click Add secret
+3. Click Add secret 
+
+
 #### Step 4: Create Secret for ANSIBLE_CONTROLLER_INSTANCE_ID
 1. Click New repository secret
 2. In the Name field, enter: ```ANSIBLE_CONTROLLER_INSTANCE_ID```
-3. In the Secret field, paste your ANSIBLE_CONTROLLER_INSTANCE_ID value (e.g., i-0xyz789abc123def)
+3. In the Secret field, paste your ANSIBLE_CONTROLLER_INSTANCE_ID value (e.g., i-0xyz789abc123def) 
+
+
 #### Step 5: Create Secret for ECR_REGISTRY
 1. Click New repository secret
 2. In the Name field, enter: ```ECR_REGISTRY```
 3. In the Secret field, paste your ECR_REGISTRY value (e.g., 123456789012.dkr.ecr.ap-southeast-1.amazonaws.com)
-4. Click Add secret
+4. Click Add secret  
+
+
 #### Step 6: Create Secret for ECR_REPOSITORY
 1. Click New repository secret
 2. In the Name field, enter: ```ECR_REPOSITORY```
