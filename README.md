@@ -1050,9 +1050,13 @@ Global Variables ```[all:vars]```
 
 - ```ansible_user=ubuntu``` — SSH user for all instances (Ubuntu default user)
 - ```ansible_ssh_private_key_file=/home/ssm-user/.ssh/ansible-key.pem``` — Path to private SSH key on Ansible controller
-- ```ansible_python_interpreter=/usr/bin/python3``` — Python 3 interpreter path on managed nodes
+- ```ansible_python_interpreter=/usr/bin/python3``` — Python 3 interpreter path on managed nodes  
+
+
 
 #### Current Folder Structure
+
+
 ```
 devops-bootcamp-final-project-kamariza/
 ├── .gitignore
@@ -1071,6 +1075,8 @@ devops-bootcamp-final-project-kamariza/
 │   └── inventory.ini
 └── README.md
 ```
+
+
 ### Create Ansible Configuration File
 #### Step 1: Create ansible.cfg
 In VS Code, inside the ```ansible/``` folder:
