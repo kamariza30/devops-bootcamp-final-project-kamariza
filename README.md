@@ -322,7 +322,9 @@ variable "cidr_block" {
 Variable explanations:
 
 - instance_type — Defines the EC2 instance size (t3.micro is Free Tier eligible)
-- idr_block — Defines the VPC IP address range (10.0.0.0/24 provides 256 IP addresses)
+- idr_block — Defines the VPC IP address range (10.0.0.0/24 provides 256 IP addresses) 
+
+
 #### Current Folder Structure
 After creating both files, your ```terraform/``` folder structure should look like this:
 ```
