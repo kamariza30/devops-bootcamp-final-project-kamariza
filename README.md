@@ -393,7 +393,10 @@ Attaches the ```AmazonSSMManagedInstanceCore``` managed policy to enable AWS Sys
 - **Resource**: ```aws_iam_role_policy_attachment``` (ECR Policy)
 Attaches the ```AmazonEC2ContainerRegistryPullOnly``` managed policy, allowing EC2 instances to pull Docker images from Amazon ECR.
 - **Resource**: ```aws_iam_instance_profile```
-Creates an instance profile that links the IAM role to EC2 instances, enabling the instances to assume the role and access SSM and ECR.
+Creates an instance profile that links the IAM role to EC2 instances, enabling the instances to assume the role and access SSM and ECR.  
+
+
+
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
