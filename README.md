@@ -739,7 +739,7 @@ variable "aws_region" {
 - ```WEB_INSTANCE_ID``` — Instance ID of web server (for GitHub Actions deployment)
 - ```ANSIBLE_CONTROLLER_INSTANCE_ID``` — Instance ID of Ansible controller
 - ```ECR_REGISTRY``` — ECR registry URL format: ```ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com```
-- ```ECR_REPOSITORY``` — Repository path: ```devops-bootcamp/final-project-kamariza```
+- ```ECR_REPOSITORY``` — Repository path: ```devops-bootcamp/final-project-kamariza```  
 
 
 ### Current Folder Structure
@@ -777,9 +777,13 @@ terraform apply -auto-approve
 This command will:
 
 - Create all AWS resources (VPC, subnets, EC2 instances, security groups, IAM roles, ECR repository, S3 bucket, SSH keys)
-- Display all outputs
+- Display all outputs  
+
+
 #### Step 3: Copy the Required Outputs
 After ```terraform apply``` completes successfully, you'll see output similar to this:
+
+
 ```
 Outputs:
 
@@ -792,8 +796,12 @@ WEB_INSTANCE_ID = "i-0abc123def456xyz"
 ANSIBLE_CONTROLLER_INSTANCE_ID = "i-0xyz789abc123def"
 ECR_REGISTRY = "123456789012.dkr.ecr.ap-southeast-1.amazonaws.com"
 ECR_REPOSITORY = "devops-bootcamp/final-project-kamariza"
-```
+``` 
+
+
 Copy these four values:
+
+
 | Variable                        | Example Value                                      |
 |---------------------------------|----------------------------------------------------|
 | `WEB_INSTANCE_ID`              | `i-0abc123def456xyz`                              |
