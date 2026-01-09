@@ -301,7 +301,9 @@ In VS Code, inside the ```terraform/``` folder:
 
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```variables.tf```
+3. Name it ```variables.tf``` 
+
+
 #### Step 2: Add Variable Definitions
 Copy and paste the following code into ```variables.tf```:
 ```
