@@ -930,21 +930,32 @@ A modal will display your credentials:
 1. Go to your GitHub repository
 2. Click Settings → Secrets and variables → Actions
 3. Click New repository secret
-4. Name it AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and paste the value respectively
+4. Name it AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and paste the value respectively  
+
+
+
 ### Configure Terraform S3 Backend
 #### Step 1: Create backend.tf
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```backend.tf```
+3. Name it ```backend.tf```  
+
+
+
 #### Step 2: Add Backend Configuration
-Copy and paste my code to backend.tf
+Copy and paste my code to backend.tf  
+
+
+
 #### Step 3: Plan Terraform Configuration
 Before migrating the state, run terraform plan:
 ```
 cd terraform
 terraform plan
-```
+```  
+
+
 #### Step 4: Migrate State to S3
 Run the following command to migrate your local state file to S3:
 ```
@@ -959,7 +970,10 @@ Answer: **yes**
 This command will:
 - Upload your local ```terraform.tfstate``` to the S3 bucket
 - Configure Terraform to use S3 as the remote backend
-- Create a ```.terraform/terraform.tfstate``` lock file
+- Create a ```.terraform/terraform.tfstate``` lock file 
+
+
+
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
@@ -997,7 +1011,9 @@ git push origin main
 In VS Code, inside the ```ansible/``` folder:
 1. Right-click on the ```ansible/``` folder
 2. Select New File
-3. Name it ```inventory.ini```
+3. Name it ```inventory.ini```  
+
+
 #### Step 2: Add Inventory Content
 Copy and paste the following code into ```inventory.ini:```
 ```
@@ -1012,6 +1028,8 @@ ansible_user=ubuntu
 ansible_ssh_private_key_file=/home/ssm-user/.ssh/ansible-key.pem
 ansible_python_interpreter=/usr/bin/python3
 ```
+
+
 #### Code Explanation
 **Inventory Groups**
 
