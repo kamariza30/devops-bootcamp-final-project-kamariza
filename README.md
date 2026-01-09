@@ -640,8 +640,10 @@ In VS Code, inside the ```terraform/``` folder:
 3. Name it ```ecr.tf```  
 
 
+
 ### Step 2: Add ECR Repository
 Copy and paste my code into ```ecr.tf```  
+
 
 
 ### Code Explanation
