@@ -846,6 +846,8 @@ In the left sidebar, under Security, click on Secrets and variables → Actions
 4. Click Add secret
 
 ### Create GitHub Actions IAM User and Secrets
+
+
 #### Step 1: Create IAM User in AWS
 1. Go to AWS IAM Console
 2. Click on Users in the left sidebar
