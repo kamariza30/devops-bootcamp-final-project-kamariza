@@ -477,7 +477,7 @@ terraform.rc
 ```  
 
 
-4. Add entry ansible-key.pem in .gitignore
+ 4. Add entry ansible-key.pem in .gitignore
 ```
 ansible/ansible-key.pem 
 ``` 
