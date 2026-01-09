@@ -1086,9 +1086,10 @@ devops-bootcamp-final-project-kamariza/
 In VS Code, inside the ```ansible/``` folder:
 1. Right-click on the ```ansible/``` folder
 2. Select New File
-3. Name it ```ansible.cfg```
-#### Step 2: Add Ansible Configuration
+3. Name it ```ansible.cfg```  
 
+
+#### Step 2: Add Ansible Configuration
 
 
 Copy and paste the following code into ```ansible.cfg```:
@@ -1104,6 +1105,8 @@ become = True
 
 
 #### Code Explanation
+
+
 
 **Configuration Options**
 
