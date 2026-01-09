@@ -1036,6 +1036,7 @@ ansible_python_interpreter=/usr/bin/python3
 **Inventory Groups**
 
 ```[web]```group:
+
 - Contains the web server instance
 - ```web``` — Host alias for the web server
 - ```ansible_host=10.0.0.5``` — Private IP address of the web server EC2 instance
@@ -1043,6 +1044,7 @@ ansible_python_interpreter=/usr/bin/python3
 ```[monitoring]``` group:
 
 Contains the monitoring server instance
+
 - ```monitoring``` — Host alias for the monitoring server
 - ```ansible_host=10.0.0.136``` — Private IP address of the monitoring server EC2 instance
 
