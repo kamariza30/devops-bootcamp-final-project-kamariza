@@ -474,7 +474,9 @@ terraform.rc
 
 # Ignore plan files
 *.tfplan
-```
+```  
+
+
 4. Add entry ansible-key.pem in .gitignore
 ```
 ansible/ansible-key.pem 
