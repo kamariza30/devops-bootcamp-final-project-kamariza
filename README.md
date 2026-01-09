@@ -612,7 +612,9 @@ Creates an S3 bucket for storing your Terraform state file.
 Enables versioning on the S3 bucket to maintain a history of all file versions.
 
 **Key attributes:**
-- ```status = "Enabled"``` — Keeps previous versions of objects, allowing you to recover deleted or overwritten files
+- ```status = "Enabled"``` — Keeps previous versions of objects, allowing you to recover deleted or overwritten files  
+
+
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
@@ -635,9 +637,13 @@ After all infrastructure is provisioned, you can configure Terraform to store it
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```ecr.tf```
+3. Name it ```ecr.tf```  
+
+
 ### Step 2: Add ECR Repository
-Copy and paste my code into ```ecr.tf```
+Copy and paste my code into ```ecr.tf```  
+
+
 ### Code Explanation
 **Resource:** ```aws_ecr_repository```
 Creates an Amazon Elastic Container Registry (ECR) repository for storing Docker images.
@@ -661,7 +667,9 @@ In VS Code, inside the ```terraform/``` folder:
 2. Select New File
 3. Name it ```output.tf```
 #### Step 2: Add Data Source and Outputs
-Copy and paste my code into ```output.tf:```
+Copy and paste my code into ```output.tf:```  
+
+
 ```
 # Get current AWS account information
 data "aws_caller_identity" "current" {}
@@ -710,7 +718,9 @@ output "ECR_REGISTRY" {
 output "ECR_REPOSITORY" {
   value = aws_ecr_repository.final_project.name
 }
-```
+```  
+
+
 #### Step 3: Add AWS Region Variable
 You need to add the ```aws_region``` variable to your ```variables.tf``` file. Open ```variables.tf``` and add:
 ```
