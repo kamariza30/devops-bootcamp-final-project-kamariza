@@ -851,8 +851,10 @@ In the left sidebar, under Security, click on Secrets and variables → Actions
 2. Click on Users in the left sidebar
 3. Click Create user
 4. Enter username: ```github-action-user```
-5. Click Next
-#### Step 2: Attach Inline Policy
+5. Click Next  
+
+
+#### Step 2: Attach Inline Policy  
 1. On the permissions page, select Attach policies directly
 2. Click Create inline policy (or paste custom policy)
 3. Choose JSON tab
@@ -900,7 +902,8 @@ In the left sidebar, under Security, click on Secrets and variables → Actions
 6. Click Review policy
 7. Enter policy name: github-actions-policy
 8. Click Create policy
-9. Click Next → Create user
+9. Click Next → Create user  
+
 
 #### Step 3: Generate Access Keys
 1. Click on the newly created ```github-action-user``` in the Users list
@@ -910,11 +913,17 @@ In the left sidebar, under Security, click on Secrets and variables → Actions
 5. Select Command Line Interface (CLI) as the use case
 6. Check the acknowledgment box
 7. Click Create access key
-8. Copy and add both Access Key id and Secret Access Key to Github secret
+8. Copy and add both Access Key id and Secret Access Key to Github secret  
+
+
+
 #### Step 4: Copy Access Keys
 A modal will display your credentials:
 - **Access Key ID** — Copy this value
-- **Secret Access Key** — Copy this value
+- **Secret Access Key** — Copy this value  
+
+
+
 #### Step 5: Add Secrets to GitHub Repository
 1. Go to your GitHub repository
 2. Click Settings → Secrets and variables → Actions
