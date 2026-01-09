@@ -342,7 +342,9 @@ devops-bootcamp-final-project-kamariza/
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```iam.tf```
+3. Name it ```iam.tf```   
+
+
 #### Step 2: Add IAM Resources
 Copy and paste the following code into ```iam.tf```:
 ```
