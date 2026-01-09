@@ -396,7 +396,6 @@ Attaches the ```AmazonEC2ContainerRegistryPullOnly``` managed policy, allowing E
 Creates an instance profile that links the IAM role to EC2 instances, enabling the instances to assume the role and access SSM and ECR.  
 
 
-
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
