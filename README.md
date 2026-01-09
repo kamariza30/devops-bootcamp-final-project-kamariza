@@ -1088,6 +1088,9 @@ In VS Code, inside the ```ansible/``` folder:
 2. Select New File
 3. Name it ```ansible.cfg```
 #### Step 2: Add Ansible Configuration
+
+
+
 Copy and paste the following code into ```ansible.cfg```:
 ```
 [defaults]
@@ -1098,6 +1101,8 @@ private_key_file = /home/ssm-user/.ssh/ansible-key.pem
 timeout = 10
 become = True
 ```
+
+
 #### Code Explanation
 
 **Configuration Options**
