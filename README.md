@@ -1231,3 +1231,111 @@ prometheus
 - Run Prometheus as Docker container
 - Configure Prometheus to scrape metrics from Node Exporter
 - Set up data retention policies
+
+
+### Configure AWS CLI Role
+
+The AWS CLI is required for the web server to authenticate with Amazon ECR during GitHub Actions deployments to pull Docker images.
+
+
+#### Step 1: Update AWS CLI Tasks
+Navigate to ```ansible/roles/awscli/tasks/main.yml``` and replace the content with:
+
+
+```
+---
+# tasks file for roles/awscli
+# Install AWS CLI v2 on web server for ECR authentication
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install AWS CLI prerequisites
+  apt:
+    name:
+      - unzip
+      - curl
+      - python3-pip
+    state
+```
+
+### Create Ansible Playbook for AWS CLI Installation 
+
+
+#### Step 1: Create install-awscli.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+- Right-click on the ```ansible/``` folder
+- Select New File
+- Name it installawscli.yml 
+
+
+
+#### Step 2: Add Playbook Content
+```
+---
+# Playbook to install AWS CLI on web server
+# This playbook installs AWS CLI v2 which is required for ECR authentication
+# Run with: ansible-playbook install-awscli.yml
+
+- name: Install AWS CLI on web server
+  hosts: web
+  become: true
+
+  roles:
+    - awscli
+```
+
+
+#### Code Explantion 
+- ```name``` — Descriptive name for the playbook
+
+- ```hosts: web``` — Target hosts from inventory (web server group)
+
+- ```become: true``` — Execute tasks with elevated privileges (sudo)
+
+- ```roles``` — List of roles to execute in order
+
+- ```awscli``` — Role that installs AWS CLI v2 
+
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── iam.tf
+│   ├── ssh.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── s3.tf
+│   ├── ecr.tf
+│   ├── output.tf
+│   └── backend.tf
+├── ansible/
+│   ├── inventory.ini
+│   ├── ansible.cfg
+│   ├── installawscli.yml
+│   └── roles/
+│       ├── awscli/
+│       │   ├── tasks/
+│       │   │   └── main.yml
+│       │   ├── handlers/
+│       │   ├── vars/
+│       │   ├── defaults/
+│       │   ├── files/
+│       │   ├── templates/
+│       │   ├── meta/
+│       │   └── tests/
+│       ├── grafana/
+│       ├── node_exporter_docker/
+│       └── prometheus/
+└── README.md
+```  
+
+
+
