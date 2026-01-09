@@ -237,6 +237,7 @@ code .
 1. In the VS Code file explorer, navigate to the ```terraform/``` folder
 2. Right-click inside the terraform/ folder and select New File
 3. Name the file ```main.tf```
+
 #### Step3: Add Terraform Configuration
 Copy and paste the following code into your ```main.tf``` file and save the file (```Ctrl+s```):
 ```
