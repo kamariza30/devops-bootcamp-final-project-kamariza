@@ -997,7 +997,10 @@ devops-bootcamp-final-project-kamariza/
 - **State Locking** — Prevents concurrent modifications using DynamoDB
 - **Encryption** — State file encrypted at rest in S3
 - **Versioning** — S3 versioning enabled for state file history
-- **Security** — No sensitive data stored locally on your computer
+- **Security** — No sensitive data stored locally on your computer  
+
+
+
 #### Commit you backend configuration to Git:
 ```
 git add terraform/backend.tf
