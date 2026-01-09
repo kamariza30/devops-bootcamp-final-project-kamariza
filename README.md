@@ -427,12 +427,16 @@ Success! The configuration is valid.
 1. Go to [https://www.toptal.com/developers/gitignore/](https://www.toptal.com/developers/gitignore/)
 2. In the search field, type ```terraform```
 3. Click Create to generate the .gitignore file
-4. Copy all the content from the generated file
+4. Copy all the content from the generated file 
+
+
 #### Step 2: Create .gitignore
 In VS Code, at the root of your project (not inside terraform/ folder):
 1. Right-click on the project root folder in the file explorer
 2. Select New File
-3. Name it ```.gitignore``` (note the dot at the beginning)
+3. Name it ```.gitignore``` (note the dot at the beginning) 
+
+
 #### Step 3: Paste the Content
 Paste the copied content from the gitignore generator into the ```.gitignore``` file.
 The file should contain entries similar to:
@@ -473,8 +477,10 @@ terraform.rc
 ```
 4. Add entry ansible-key.pem in .gitignore
 ```
-ansible/ansible-key.pem
-```
+ansible/ansible-key.pem 
+``` 
+
+
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
