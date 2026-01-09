@@ -269,7 +269,8 @@ devops-bootcamp-final-project-kamariza/
 This Terraform configuration block:
 - Specifies the required provider (AWS)
 - Sets the source to HashiCorp's official AWS provider
-- Locks the AWS provider version to 6.25.0 for consistency and reproducibility 
+- Locks the AWS provider version to 6.25.0 for consistency and reproducibility
+
 
 #### Step 4: Initialize Terraform
 Open a terminal in VS Code (Terminal > New Terminal) and run:
