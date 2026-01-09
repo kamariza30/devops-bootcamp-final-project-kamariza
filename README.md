@@ -1038,8 +1038,11 @@ ansible_python_interpreter=/usr/bin/python3
 ```[web]```group:
 
 - Contains the web server instance
+
 - ```web``` — Host alias for the web server
+
 - ```ansible_host=10.0.0.5``` — Private IP address of the web server EC2 instance
+
 
 ```[monitoring]``` group:
 
