@@ -509,7 +509,9 @@ The .gitignore file will prevent sensitive files like ```ansible-key.pem```, Ter
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```vpc.tf```
+3. Name it ```vpc.tf``` 
+
+
 #### Step 2: Add VPC Resources
 Copy and paste my code into ```vpc.tf```:
 
@@ -547,7 +549,9 @@ devops-bootcamp-final-project-kamariza/
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```ec2.tf```
+3. Name it ```ec2.tf```  
+
+
 #### Step 2: Add EC2 Resources
 Copy and paste the code from my ec2.tf
 #### Code Explanation
@@ -566,7 +570,9 @@ Copy and paste the code from my ec2.tf
 **Monitoring Server** (```monitoring_server```):
 - Located in private subnet
 - Hosts Prometheus and Grafana for monitoring
-- Accessible only from within the VPC
+- Accessible only from within the VPC  
+
+
 #### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
@@ -580,7 +586,9 @@ devops-bootcamp-final-project-kamariza/
 │   └── ec2.tf
 ├── ansible/
 └── README.md
-```
+``` 
+
+
 ### Create S3 Configuration File
 #### Step 1: Create s3.tf
 In VS Code, inside the ```terraform/``` folder:
