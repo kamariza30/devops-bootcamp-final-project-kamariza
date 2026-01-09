@@ -667,7 +667,10 @@ This ECR repository will be used in your CI/CD pipeline:
 In VS Code, inside the ```terraform/``` folder:
 1. Right-click on the ```terraform/``` folder
 2. Select New File
-3. Name it ```output.tf```
+3. Name it ```output.tf```  
+
+
+
 #### Step 2: Add Data Source and Outputs
 Copy and paste my code into ```output.tf:```  
 
