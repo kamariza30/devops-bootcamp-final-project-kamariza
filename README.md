@@ -670,7 +670,6 @@ In VS Code, inside the ```terraform/``` folder:
 3. Name it ```output.tf```  
 
 
-
 #### Step 2: Add Data Source and Outputs
 Copy and paste my code into ```output.tf:```  
 
