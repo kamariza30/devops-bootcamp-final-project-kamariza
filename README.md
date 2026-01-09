@@ -740,6 +740,8 @@ variable "aws_region" {
 - ```ANSIBLE_CONTROLLER_INSTANCE_ID``` — Instance ID of Ansible controller
 - ```ECR_REGISTRY``` — ECR registry URL format: ```ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com```
 - ```ECR_REPOSITORY``` — Repository path: ```devops-bootcamp/final-project-kamariza```
+
+
 ### Current Folder Structure
 ```
 devops-bootcamp-final-project-kamariza/
@@ -756,7 +758,9 @@ devops-bootcamp-final-project-kamariza/
 │   └── output.tf
 ├── ansible/
 └── README.md
-```
+```  
+
+
 ### Run Terraform Plan and Apply
 #### Step 1: Run Terraform Plan
 In your terminal, navigate to the terraform directory and run:
