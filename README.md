@@ -933,7 +933,6 @@ A modal will display your credentials:
 4. Name it AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and paste the value respectively  
 
 
-
 ### Configure Terraform S3 Backend
 #### Step 1: Create backend.tf
 In VS Code, inside the ```terraform/``` folder:
