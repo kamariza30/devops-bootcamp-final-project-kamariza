@@ -1306,16 +1306,6 @@ In VS Code, inside the ```ansible/``` folder:
 devops-bootcamp-final-project-kamariza/
 ├── .gitignore
 ├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── iam.tf
-│   ├── ssh.tf
-│   ├── vpc.tf
-│   ├── ec2.tf
-│   ├── s3.tf
-│   ├── ecr.tf
-│   ├── output.tf
-│   └── backend.tf
 ├── ansible/
 │   ├── inventory.ini
 │   ├── ansible.cfg
@@ -1336,6 +1326,84 @@ devops-bootcamp-final-project-kamariza/
 │       └── prometheus/
 └── README.md
 ```  
+
+
+### Install Docker Role and Create Playbook
+
+
+#### Step 1: Install Docker Role from Ansible Galaxy
+In your terminal, navigate to the ```ansible/``` folder and run:
+```
+cd ansible
+ansible-galaxy install geerlingguy.docker
+```  
+This command downloads the geerlingguy.docker role from Ansible Galaxy (community repository).  
+
+
+#### Step 2: Create installdocker.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+- Right-click on the ```ansible/``` folder
+
+- Select New File
+
+- Name it ```installdocker.yml```  
+
+
+#### Step 3: Add Playbook Content
+Copy and paste the following code into ```install-docker.yml:```
+
+
+```
+---
+# Playbook to install Docker on all remote hosts
+# Before running this playbook, you must install the role: ansible-galaxy install geerlingguy.docker
+# Run with: ansible-playbook install-docker.yml
+
+- name: Install Docker on all hosts
+  hosts: all
+  become: true
+
+  roles:
+    - geerlingguy.docker
+```
+
+
+#### Code Explanation
+
+- ```name``` — Descriptive name for the playbook
+
+- ```hosts: all``` — Target all hosts in inventory (web, monitoring, ansible-controller)
+
+- ```become: true``` — Execute tasks with elevated privileges (sudo)
+
+- ```roles``` — List of roles to execute
+
+- ```geerlingguy.docker``` — Community-maintained Docker installation role 
+
+
+#### Current Folder Structure
+
+
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        ├── node_exporter_docker/
+        └── prometheus/
+```
+
+
+
 
 
 
