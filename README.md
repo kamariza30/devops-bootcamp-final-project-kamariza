@@ -19,6 +19,12 @@ This project demonstrates proficiency across the full DevOps lifecycle:
 
 All AWS infrastructure is provisioned declaratively using Terraform, ensuring repeatable and version-controlled deployments. Server configuration is managed entirely through Ansible playbooks, enabling consistent and idempotent infrastructure state across all environments. The project prioritizes infrastructure automation and deployment orchestration rather than application development.
 
+
+## Output of The Project
+
+![Project Completion](./images/projectcompleted.png)
+
+
 ### CI/CD Pipeline
 
 The GitHub Actions workflow automates two primary tasks: publishing documentation updates and managing container image delivery. The pipeline clones the Ansible playbook repository to the Ansible controller, then builds Docker images, pushes them to Amazon ECR, and triggers deployment through SSM commands to EC2 instances running the containerized application.
@@ -36,6 +42,7 @@ The following tools and accounts are required to complete this project:
 - **Docker** — Container runtime installed locally for building and testing Docker images
 - **Ansible** — Configuration management tool installed locally for playbook development and testing
 - **AWS CLI** — Command-line tool for managing AWS resources programmatically from your terminal
+- **Domain in Cloudflare** 
 
 ### Development Environment Setup
 
