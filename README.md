@@ -2065,6 +2065,31 @@ devops-bootcamp-final-project-kamariza/
 #### Save All Files and Commit Git
 
 
+### Verifying Infrastructure Provisioning
+
+After running terraform ```apply -auto-approve``` to provision your infrastructure, follow these steps to verify your deployment:
+
+
+#### Step 1: Navigate to AWS Console
+
+Log in to your AWS Console and go to EC2 Dashboard. You should see three EC2 instances:
+
+![3 EC2 Instances](./images/3ec2.png)
+
+1. **Ansible Controller** — Runs Ansible playbooks for infrastructure automation
+2. **Monitoring Server** — Hosts Prometheus and Grafana for observability
+3. **Web Server** — Your application server with Node Exporter for metrics collection
+
+#### Step 2: Connect to Ansible Controller via Systems Manager
+
+1. Select the Ansible Controller instance
+2. Click Connect → Session Manager tab
+3. Click Connect to establish an SSM session
+
+![3 EC2 Instances](./images/ssm.png)
+
+This establishes a secure connection to your Ansible Controller without requiring SSH keys or exposed ports.
+
 
 
 
