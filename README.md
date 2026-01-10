@@ -2295,10 +2295,10 @@ Monitor the playbook output for any errors or warnings. Upon successful completi
 1. Navigate to your GitHub repository
 2. Click on the Actions tab
 3. Select the Build and Push docker image to AWS ECR workflow
+4. Click Run workflow to manually trigger the build process
 
 ![github action 2](./images/githubaction2.png)
 
-4. Click Run workflow to manually trigger the build process
 
 
 This GitHub Action will:
