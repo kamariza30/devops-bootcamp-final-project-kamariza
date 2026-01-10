@@ -5,5 +5,5 @@ grafana_port: 3000
 grafana_container_name: grafana
 grafana_data_dir: /data/grafana
 grafana_admin_user: admin
-grafana_admin_password: kamaftw123  # Change this!
+grafana_admin_password: Mypassword  # Change this!
 monitoring_server_ip: 10.0.0.136

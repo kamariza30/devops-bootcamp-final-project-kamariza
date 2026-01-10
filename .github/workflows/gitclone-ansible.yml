@@ -1,4 +1,4 @@
-name: Sync Ansible Folder to Controller
+name: Sync Ansible Folder to ssm-user directory
 
 on:
   workflow_dispatch:

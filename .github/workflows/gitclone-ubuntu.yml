@@ -1,4 +1,4 @@
-name: Sync Ansible Folder to ubunru/home
+name: Sync Ansible Folder to /home/ubuntu
 
 on:
   workflow_dispatch:

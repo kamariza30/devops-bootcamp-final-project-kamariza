@@ -1949,7 +1949,124 @@ devops-bootcamp-final-project-kamariza/
 ```
 
 
-#### Step 3: Save All the Files and Commit to Git
+### Create Master Playbook to Install All Services
+
+
+#### Step 1: Create install-all-services.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+1. Right-click on the ```ansible/``` folder
+2. Select New File
+3. Name it ```install-all-services.yml```
+
+
+#### Step 2: Add Playbook Content
+Copy and paste the following code into ```install-all-services.yml:```
+```
+---
+# Master Playbook: Install All Services
+# Configures entire infrastructure in one execution
+# Includes: Docker, AWS CLI, Node Exporter, Prometheus, and Grafana
+# Run with: ansible-playbook install-all-services.yml
+
+# Prerequisite - Docker on all hosts
+- name: Install Docker on all hosts
+  hosts: all
+  become: true
+
+  roles:
+    - geerlingguy.docker
+
+
+# Web server configuration
+- name: Configure web servers
+  hosts: web
+  become: true
+
+  roles:
+    - awscli
+    - prometheus.prometheus.node_exporter
+
+
+# Monitoring server configuration
+- name: Deploy monitoring stack
+  hosts: monitoring
+  become: yes
+
+  roles:
+    - prometheus
+    - grafana
+```
+
+
+### Create Facts Playbook for Connection Testing
+
+
+#### Step 1: Create facts.yml Playbook
+In VS Code, inside the ```ansible/ folder:```
+
+- Right-click on the ```ansible/ folder``
+- Select New File
+- Name it ```facts.yml```
+
+
+#### Step 2: Add Playbook Content
+Copy and paste the following code into ```facts.yml:```
+```
+---
+# Playbook: Test Ansible Controller Connection
+# Tests connectivity and gathers system facts from all hosts
+# Useful for: Verifying SSH connectivity, checking system info
+# Run with: ansible-playbook facts.yml
+
+- name: Gather and Display System Facts
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Display system facts
+      debug:
+        msg: |
+          Hostname: {{ ansible_facts['hostname'] }}
+          OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
+          IP: {{ ansible_facts['default_ipv4']['address'] }}
+          Memory: {{ ansible_facts['memtotal_mb'] }} MB
+```
+
+
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .github/
+│   └── workflows/
+│       ├── docker-build.yml
+│       └── gitclone-ansible.yml
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── facts.yml ( For testing connection)
+    ├── install-all-services.yml
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    ├── install-grafana.yml
+    ├── install-node-exporter.yml
+    ├── install-prometheus.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        └── prometheus/
+```
+
+
+#### Save All Files and Commit Git
+
+
+
+
 
 
 
