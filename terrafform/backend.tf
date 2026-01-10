@@ -1,4 +1,4 @@
-/*terraform {
+terraform {
   backend "s3" {
     bucket       = "devops-bootcamp-final-project-kamariza"
     key          = "terraform.tfstate"
@@ -7,5 +7,3 @@
     use_lockfile = true
   }
 }
-
-*/

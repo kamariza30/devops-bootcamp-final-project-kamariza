@@ -2092,10 +2092,250 @@ This establishes a secure connection to your Ansible Controller without requirin
 
 
 
+### Syncing Ansible Playbooks to Ansible Controller
+
+#### Step 1: Trigger GitHub Actions Workflow 
+1. Navigate to your GitHub repository
+2. Click on the Actions tab
+3. Select the Sync Ansible Folder to ssm-user workflow
+
+![github action 1](./images/githubaction1.png)
+
+4. Click Run workflow to manually trigger the automation
+
+![github action 1.1](./images/githubaction1.1.png)
+
+This GitHub Action automatically downloads your Ansible folder from the repository and uploads it to the Ansible Controller instance via AWS Systems Manager.
+
+
+#### Step 2: Verify Workflow Completion
+Monitor the workflow execution in the **Actions tab**. Once the workflow shows a **green checkmark**, the sync has completed successfully.
+
+![github action 1.2](./images/githubaction1.2.png)
+
+
+#### Step 4: Verify Files on Ansible Controller
+1. Connect to the Ansible Controller via AWS Systems Manager (Session Manager)
+2. Run the following command to verify the Ansible folder was uploaded:
+```
+ls
+```
+
+You should see the **devops-bootcamp-final-project-kamariza** directory containing all your Ansible playbooks, roles, and configuration files.
+
+
+### Preparing Ansible Controller for Playbook Execution
+
+#### Step 1: Verify Ansible Installation
+
+Confirm Ansible is installed on the Ansible Controller:
+```
+which ansible
+```
+
+You should see the Ansible binary path (e.g., ```/usr/bin/ansible```), confirming Ansible is available.
+
+
+#### Step 2: Fix SSH Key Permissions
+Change ownership of your private SSH key to the ssm-user:
+```
+sudo chown ssm-user:ssm-user /home/ssm-user/.ssh/ansible-key.pem
+```
+
+This ensures the SSH key has correct permissions for Ansible to authenticate with remote hosts
+
+
+#### Step 3: Navigate to Ansible Directory
+Change to your Ansible project directory:
+```
+cd devops-bootcamp-final-project-kamariza/ansible/
+```
+
+#### Step 4: Install Required Ansible Dependencies
+Install the Geerlingguy Docker collection for Docker management:
+```
+sudo ansible-galaxy install geerlingguy.docker
+```
+
+Install the Prometheus collection for Node Exporter deployment:
+```
+sudo ansible-galaxy collection install prometheus.prometheus
+```
+These dependencies enable your playbooks to correctly configure Docker containers and deploy Node Exporter monitoring.
+
+
+#### Step 5: Configure Grafana Admin Credentials
+Edit the Grafana defaults file to set your admin password:
+```
+sudo nano roles/grafana/defaults/main.yml
+```
+Update the grafana_admin_password variable with a secure password, then save and exit (Ctrl + X, Y, Enter).
+
+
+#### Step 6: Verify Host Connectivity
+Test connectivity to all inventory hosts by running the facts playbook:
+```
+sudo ansible-playbook facts.yml
+```
+
+Expected output should show successful fact gathering from both the monitoring server and web server, confirming Ansible has proper SSH access and network connectivity to execute playbooks on all hosts.
+
+If the playbook completes without errors, your Ansible Controller is ready to deploy the full monitoring stack.
+
+
+### Running Ansible Playbooks to Configure Infrastructure
+You have two approaches for deploying your services:
+
+
+#### Option 1: Run All Services at Once (Recommended)
+Execute the master playbook that configures all services in sequence:
+```
+sudo ansible-playbook install-all-services.yml
+```
+
+
+#### Option 2: Run Individual Playbooks (Optional)
+Alternatively, you can execute each playbook separately for granular control:
+```
+sudo ansible-playbook install-awscli.yml
+sudo ansible-playbook install-docker.yml
+sudo ansible-playbook install-prometheus.yml
+sudo ansible-playbook install-grafana.yml
+sudo ansible-playbook install-node-exporter.yml
+```
+
+Monitor the playbook output for any errors or warnings. Upon successful completion, your web server will have Node Exporter running, and your monitoring server will have both Prometheus and Grafana configured and operational.
+
+
+### Building and Deploying Your Application
+
+
+#### Step 1: Trigger Docker Build and Push Workflow
+1. Navigate to your GitHub repository
+2. Click on the Actions tab
+3. Select the Build and Push docker image to AWS ECR workflow
+
+![github action 2](./images/githubaction2.png)
+
+4. Click Run workflow to manually trigger the build process
+
+
+This GitHub Action will:
+- Build your Docker image from the Dockerfile
+- Push the image to your AWS ECR repository
+- Deploy the image to your web server via AWS Systems Manager
+
+
+#### Step 2: Verify Workflow Success
+Monitor the workflow execution in the Actions tab. Wait for the workflow to complete and display a green checkmark, indicating successful build, push, and deployment.
+
+![github action 2.1](./images/githubaction2.1.png)
+
+
+#### Step 3: Verify Image in ECR
+
+1. Log in to your AWS Console
+2. Navigate to ECR (Elastic Container Registry)
+3. Click on your repository
+4. Confirm your Docker image is present with the latest tag
+
+![ecr images1](./images/ecr1.png)
+
+
+#### Step 4: Access Your Application
+
+1. Go to your EC2 Dashboard
+2. Select your Web Server instance
+3. Copy the Public IPv4 address
+4. Open a web browser and navigate to:
+
+```
+http://<web-server-public-ip>
+```
+
+Your application is now live and running on the web server.
+
+
+### Configuring Cloudflare Zero Trust Public Hostname
+
+
+#### Step 1: Add Public Hostname to Tunnel
+- Subdomain - monitoring
+- Domain - kamakloud.com
+- Path - Leave blank
+- Type - HTTPS
+- URL - localhost:3000
+
+
+Your public hostname will be: **monitoring.kamakloud.com**
+This routes all traffic to ```monitoring.kamakloud.com``` through the Cloudflare tunnel to your monitoring server's Grafana instance on port 3000.
+
+
+#### Step 2: Add DNS A Record for Web Server
+1. In your Cloudflare Dashboard, go to DNS → Records
+2. Click Add record
+3. Configure the new A record:
+- Type - A
+- Name - web
+- IPv4 - Web server public IP
+- TTL - Auto
+
+Your web server will be accessible at: web.kamakloud.com
+
+
+#### Step 3: Configure SSL/TLS Settings
+
+1. In your Cloudflare Dashboard, go to SSL/TLS → Overview
+2. Under Encryption mode, select Flexible
+3. This allows HTTPS encryption between your browser and Cloudflare, while Cloudflare communicates with your origin server over HTTP.
 
 
 
+### Configuring Grafana with Prometheus and Node Exporter Dashboard
+
+#### Step 1: Access Grafana
+Go to ```https://monitoring.kamakloud.com``` and login
+
+
+#### Step 2: Add Prometheus Data Source
+
+1. In Grafana, go to Connections → Data Sources
+2. Click Add new data source
+3. Search for and select Prometheus
+4. Configure the data source:
+
+- Name - Prometheus
+- Server url - http://10.0.0.136:9090
+5. Click Save & test
 
 
 
+#### Step 3: Import Node Exporter Dashboard
+1. Click Dashboards → Import
+2. Go to https://grafana.com/grafana/dashboards/
+3. Search for "Node Exporter Full"
+4. Copy the dashboard ID (typically 1860)
+5. Return to Grafana and paste the ID in the Import via grafana.com field
+6. Click Load
 
+
+#### Step 4: Select Data Source and Import
+1. When prompted, select Prometheus as the data source
+2. Click Import
+
+
+The Node Exporter Full dashboard will now display metrics from your web server, including:
+- CPU usage and load
+- Memory and swap usage
+- Disk I/O and space
+- Network interfaces and traffic
+- System uptime and processes
+
+
+#### Step 5: Save the Dashboard
+
+The dashboard is automatically created and saved. You can now view real-time metrics from your web server collected by Node Exporter and stored in Prometheus.
+
+
+### Project Now Completed
+![Project Completion](./images/projectcompleted.png)
