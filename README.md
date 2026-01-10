@@ -21,7 +21,7 @@ All AWS infrastructure is provisioned declaratively using Terraform, ensuring re
 
 
 ## Output of The Project
-Accessing the the monitoring server via [monitoring.kamakloud.com](monitoring.kamakloud.com) & web server [web.kamakloud.com](web.kamakloud.com)
+Accessing the the monitoring server via [monitoring.kamakloud.com](https://monitoring.kamakloud.com) & web server [web.kamakloud.com](https://web.kamakloud.com)
 
 ![Project Completion](./images/projectcompleted.png)
 
