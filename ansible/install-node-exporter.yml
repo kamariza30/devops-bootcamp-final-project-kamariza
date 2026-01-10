@@ -1,0 +1,8 @@
+---
+- name: Install Prometheus Node Exporter
+  hosts: exporters
+  become: true
+  roles:
+    - prometheus.prometheus.node_exporter
+
+# please run `ansible-galaxy collection install prometheus.prometheus` before using this playbook

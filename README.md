@@ -1124,7 +1124,6 @@ In your terminal, navigate to the ```ansible/``` folder and run the following co
 cd ansible
 ansible-galaxy init roles/awscli
 ansible-galaxy init roles/grafana
-ansible-galaxy init roles/node_exporter_docker
 ansible-galaxy init roles/prometheus
 ```
 Each command creates a role with the standard Ansible role directory structure.
@@ -1152,22 +1151,6 @@ ansible/
     │   └── vars/
     │       └── main.yml
     ├── grafana/
-    │   ├── defaults/
-    │   │   └── main.yml
-    │   ├── files/
-    │   ├── handlers/
-    │   │   └── main.yml
-    │   ├── meta/
-    │   │   └── main.yml
-    │   ├── tasks/
-    │   │   └── main.yml
-    │   ├── templates/
-    │   ├── tests/
-    │   │   ├── inventory
-    │   │   └── test.yml
-    │   └── vars/
-    │       └── main.yml
-    ├── node_exporter_docker/
     │   ├── defaults/
     │   │   └── main.yml
     │   ├── files/
@@ -1223,9 +1206,6 @@ grafana
 - Configure data sources (Prometheus)
 - Set up dashboards for visualization
 
-node_exporter_docker
-- Run Node Exporter as a Docker container
-- Exposes metrics on port 9100 for Prometheus collection
 
 prometheus
 - Run Prometheus as Docker container
@@ -1247,18 +1227,53 @@ Navigate to ```ansible/roles/awscli/tasks/main.yml``` and replace the content wi
 # tasks file for roles/awscli
 # Install AWS CLI v2 on web server for ECR authentication
 
-- name: Update APT cache
+- name: update apt cache
   apt:
     update_cache: yes
     cache_valid_time: 3600
 
-- name: Install AWS CLI prerequisites
+- name: install prequisites
   apt:
     name:
       - unzip
       - curl
       - python3-pip
-    state
+    state: present
+
+- name: Check if AWS CLI already installed
+  command: /usr/local/bin/aws --version
+  register: aws_cli_check
+  failed_when: false
+  changed_when: false
+
+- name: Download AWS CLI v2 installer
+  shell: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+  args:
+    creates: /tmp/awscliv2.zip
+  when: aws_cli_check.rc != 0
+
+- name: Extract AWS CLI installer
+  unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: yes
+    creates: /tmp/aws/install
+  when: aws_cli_check.rc != 0
+
+- name: Install AWS CLI v2
+  shell: /tmp/aws/install
+  args:
+    creates: /usr/local/bin/aws
+  when: aws_cli_check.rc != 0
+
+- name: Verify AWS CLI installation
+  command: /usr/local/bin/aws --version
+  register: aws_version
+  changed_when: false
+
+- name: Display AWS CLI version
+  debug:
+    msg: "AWS CLI installed: {{ aws_version.stdout }}"
 ```
 
 ### Create Ansible Playbook for AWS CLI Installation 
@@ -1322,7 +1337,6 @@ devops-bootcamp-final-project-kamariza/
 │       │   ├── meta/
 │       │   └── tests/
 │       ├── grafana/
-│       ├── node_exporter_docker/
 │       └── prometheus/
 └── README.md
 ```  
@@ -1398,9 +1412,545 @@ devops-bootcamp-final-project-kamariza/
     └── roles/
         ├── awscli/
         ├── grafana/
-        ├── node_exporter_docker/
         └── prometheus/
 ```
+
+
+### Install Prometheus Collection and Create Playbook
+
+
+#### Step 1: Install Prometheus Collection
+```
+cd ansible
+ansible-galaxy collection install prometheus.prometheus
+```
+
+
+#### Step 2 Create install-node-exporter.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+1. Right-click on the ```ansible/``` folder
+2. Select New File
+3. Name it ```install-node-exporter.yml```  
+
+
+#### Step 3: Add Playbook Content
+```
+---
+# please run `ansible-galaxy collection install prometheus.prometheus` before using this playbook
+- name: Install Prometheus Node Exporter
+  hosts: web
+  become: true
+  roles:
+    - prometheus.prometheus.node_exporter
+```
+
+
+#### Code Explanation
+- ```hosts: web``` — Target hosts in the web group
+
+- ```become: true``` — Execute with sudo privileges
+
+- ```prometheus.prometheus.node_exporter``` — Role from installed Prometheus collection  
+
+
+
+#### Current Folder Sructure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    ├── install-node-exporter.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        └── prometheus/
+```
+
+
+### Setup Grafana Playbook and Configuration
+
+
+#### Step 1: Edit roles/grafana/defaults/main.yml
+Navigate to ansible/roles/grafana/defaults/main.yml and replace the content:
+```
+---
+# defaults file for roles/grafana
+# Grafana Docker container configuration
+
+grafana_image: grafana/grafana
+grafana_version: latest
+grafana_port: 3000
+grafana_container_name: grafana
+grafana_data_dir: /data/grafana
+grafana_admin_user: admin
+grafana_admin_password: Mypassword  # Change this to a secure password!
+monitoring_server_ip: 10.0.0.136
+```
+
+
+#### Code Explanation
+- ```grafana_image``` — Official Grafana Docker image from Docker Hub
+
+- ```grafana_version``` — Image version (latest)
+
+- ```grafana_port``` — Web UI port (3000)
+
+- ```grafana_container_name``` — Container name for management
+
+- ```grafana_data_dir``` — Host directory for persistent data storage
+
+- ```grafana_admin_user``` — Admin username for Grafana login
+
+- ```grafana_admin_password``` — Admin password (Change this!)
+
+- ```monitoring_server_ip``` — Monitoring server IP address
+
+
+#### Step 2: Edit roles/grafana/tasks/main.yml
+Navigate to ```ansible/roles/grafana/tasks/main.yml``` and replace the content:
+```
+---
+# tasks file for roles/grafana
+# Deploy Grafana as Docker container for metrics visualization
+
+- name: Create Grafana data directory
+  file:
+    path: "{{ grafana_data_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Set Grafana directory permissions
+  file:
+    path: "{{ grafana_data_dir }}"
+    owner: '472'
+    group: '472'
+    mode: '0755'
+    recurse: yes
+
+- name: Pull Grafana Docker image
+  docker_image:
+    name: "{{ grafana_image }}:{{ grafana_version }}"
+    source: pull
+  retries: 3
+  delay: 5
+
+- name: Create and start Grafana container
+  docker_container:
+    name: "{{ grafana_container_name }}"
+    image: "{{ grafana_image }}:{{ grafana_version }}"
+    state: started
+    restart_policy: always
+    recreate: no
+    ports:
+      - "{{ grafana_port }}:3000"
+    volumes:
+      - "{{ grafana_data_dir }}:/var/lib/grafana"
+    env:
+      GF_SECURITY_ADMIN_USER: "{{ grafana_admin_user }}"
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+```
+
+
+#### Step 3: Create install-grafana.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+1. Right-click on ```the ansible/``` folder
+2. Select New File
+3. Name it ```install-grafana.yml```  
+
+
+#### Step 4: Add Playbook Content
+Copy and paste the following code into ```install-grafana.yml:``` 
+
+```
+---
+# Playbook to deploy Grafana on monitoring server
+# Grafana visualizes metrics collected by Prometheus
+# Run with: ansible-playbook install-grafana.yml
+
+- name: Deploy Grafana on Monitoring Server
+  hosts: monitoring
+  become: yes
+
+  roles:
+    - grafana
+```
+
+
+#### Code Explanation
+- ```hosts: monitoring``` — Target monitoring server only
+- ```become: yes``` — Execute with sudo privileges
+- ```roles: grafana``` — Execute grafana role with defaults  
+
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    ├── install-grafana.yml
+    ├── install-node-exporter.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        │   ├── defaults/
+        │   │   └── main.yml (UPDATED)
+        │   └──tasks/
+        │       └── main.yml (UPDATED)
+        └── prometheus/
+```
+
+
+### Setup Prometheus Configuration and Playbook
+
+
+#### Step 1: Edit roles/prometheus/defaults/main.yml
+Navigate to ```ansible/roles/prometheus/defaults/main.yml``` and replace the content:
+```
+---
+# defaults file for roles/prometheus
+# Prometheus time-series database and monitoring server configuration
+
+prometheus_image: prom/prometheus
+prometheus_version: latest
+prometheus_port: 9090
+prometheus_container_name: prometheus
+prometheus_data_dir: /data/prometheus
+prometheus_config_dir: /etc/prometheus
+monitoring_server_ip: 10.0.0.136
+web_server_ip: 10.0.0.5
+```
+
+
+#### Code Explanation
+- ```prometheus_image``` — Official Prometheus Docker image
+- ```prometheus_version``` — Image version (latest)
+- ```prometheus_port``` — Web UI and API port (9090)
+- ```prometheus_container_name``` — Container name
+- ```prometheus_data_dir``` — Host directory for time-series data storage
+- ```prometheus_config_dir``` — Host directory for configuration files
+- ```monitoring_server_ip``` — Monitoring server IP (Prometheus runs here)
+- ```web_server_ip``` — Web server IP (Node Exporter metrics from here)
+
+
+#### Step 2: Edit roles/prometheus/tasks/main.yml
+Navigate to ```ansible/roles/prometheus/tasks/main.yml``` and replace the content:
+```
+---
+# tasks file for roles/prometheus
+# Deploy Prometheus as Docker container for metrics collection
+
+- name: Create Prometheus directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ prometheus_data_dir }}"
+    - "{{ prometheus_config_dir }}"
+
+- name: Set Prometheus directory permissions
+  file:
+    path: "{{ prometheus_data_dir }}"
+    owner: '65534'
+    group: '65534'
+    mode: '0755'
+    recurse: yes
+
+- name: Create Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_dir }}/prometheus.yml"
+    mode: '0644'
+
+- name: Pull Prometheus Docker image
+  docker_image:
+    name: "{{ prometheus_image }}:{{ prometheus_version }}"
+    state: present
+    source: pull
+  retries: 3
+  delay: 5
+
+- name: Create and start Prometheus container
+  docker_container:
+    name: "{{ prometheus_container_name }}"
+    image: "{{ prometheus_image }}:{{ prometheus_version }}"
+    state: started
+    restart_policy: always
+    recreate: no
+    ports:
+      - "{{ prometheus_port }}:9090"
+    volumes:
+      - "{{ prometheus_config_dir }}/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "{{ prometheus_data_dir }}:/prometheus"
+```
+
+
+#### Step 3: Edit roles/prometheus/templates/prometheus.yml.j2
+Navigate to ansible/roles/prometheus/templates/prometheus.yml.j2 and replace the content:
+```
+# Prometheus configuration
+# Global settings apply to all scrape jobs
+global:
+  scrape_interval: 15s          # How often to scrape targets
+  evaluation_interval: 15s       # How often to evaluate alert rules
+  external_labels:
+    monitor: 'prometheus'
+
+
+scrape_configs:
+  # Prometheus itself - self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['{{ monitoring_server_ip }}:9090']
+
+
+  # Node Exporter on Web Server
+  - job_name: 'web-server'
+    static_configs:
+      - targets: ['{{ web_server_ip }}:9100']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'web-server'
+```
+
+
+#### Step 4: Create install-prometheus.yml Playbook
+In VS Code, inside the ```ansible/``` folder:
+
+1. Right-click on the ```ansible/``` folder
+2. Select New File
+3. Name it ```install-prometheus.yml```
+
+
+
+#### Step 5: Add Playbook Content
+```
+---
+# Playbook to deploy Prometheus on monitoring server
+# Prometheus collects and stores time-series metrics
+# Run with: ansible-playbook install-prometheus.yml
+
+- name: Deploy Prometheus on Monitoring Server
+  hosts: monitoring
+  become: yes
+
+  roles:
+    - prometheus
+```
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    ├── install-grafana.yml
+    ├── install-node-exporter.yml
+    ├── install-prometheus.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        └── prometheus/
+            ├── defaults/
+            │   └── main.yml (UPDATED)
+            ├── tasks/
+            │   └── main.yml (UPDATED)
+            └──templates/
+                └── prometheus.yml.j2 (UPDATED/CREATED)
+``` 
+
+
+### Setup GitHub Actions Workflows
+
+#### Step 1: Create .github/workflows Directory Structure
+In VS Code, navigate to the root of your project:
+
+1. Right-click on the project root folder devops-bootcamp-final-project-kamariza/
+
+2. Select New Folder
+
+3. Name it .github
+
+Then inside .github:
+
+1. Right-click on the .github/ folder
+
+2. Select New Folder
+
+3. Name it workflows
+
+
+### Create GitHub Actions Docker Build and Push Workflow
+
+#### Step 1: Create docker-build.yml Workflow File
+In VS Code, inside the ```.github/workflows/``` folder:
+
+1. Right-click on the ```workflows/``` folder
+2. Select New File
+3. Name it ```docker-build.yml```
+
+
+#### Step 2: Add Workflow Content
+```
+---
+# GitHub Actions Workflow: Build and Push Docker Image to AWS ECR
+# Builds Docker image, pushes to ECR, and deploys to web server via Systems Manager
+# Trigger: Manual (workflow_dispatch) via GitHub Actions UI
+
+name: Build and Push Docker Image to AWS ECR
+
+on:
+  workflow_dispatch:
+    # Manual trigger in GitHub Actions UI
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: latest
+        run: |
+          docker build -t $ECR_REPOSITORY .
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Deploy to EC2 via Systems Manager
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.WEB_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}",
+              "docker pull ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest",
+              "docker stop final-project || true",
+              "docker rm final-project || true",
+              "docker run -d -p 80:80 -e USER_NAME=\"KAMARIZA SUHAINI\" --name final-project ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest"
+            ]' \
+            --region ap-southeast-1
+```
+
+### Create GitHub Actions Ansible Sync Workflow
+
+#### Step 1: Create gitclone-ansible.yml Workflow File
+In VS Code, inside the ```.github/workflows/``` folder:
+1. Right-click on the ```workflows/ folder```
+2. Select New File
+3. Name it ```gitclone-ansible.yml```
+
+
+#### Step 2: Add Workflow Content
+Copy and paste the following code into ```gitclone-ansible.yml:```
+```
+---
+# GitHub Actions Workflow: Sync Ansible Folder to Controller
+# Clones repository and syncs ansible folder to Ansible controller server via Systems Manager
+# Trigger: Manual (workflow_dispatch) via GitHub Actions UI
+
+name: Sync Ansible Folder to Controller
+
+on:
+  workflow_dispatch:
+    # Manual trigger in GitHub Actions UI
+
+jobs:
+  sync-ansible:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      - name: Sync ansible folder to controller
+        run: |
+          aws ssm send-command \
+            --instance-ids ${{ secrets.ANSIBLE_CONTROLLER_INSTANCE_ID }} \
+            --document-name "AWS-RunShellScript" \
+            --parameters 'commands=[
+              "rm -rf devops-bootcamp-final-project-kamariza",
+              "git clone --filter=blob:none --sparse https://github.com/kamariza30/devops-bootcamp-final-project-kamariza.git",
+              "cd devops-bootcamp-final-project-kamariza",
+              "git sparse-checkout set ansible",
+              "echo \"✓ Ansible folder synced successfully at $(date)\"",
+              "ls -la"
+            ]' \
+            --region ap-southeast-1
+
+      - name: Verify sync
+        run: echo "Ansible playbooks synced to controller"
+```
+
+
+#### Current Folder Structure
+```
+devops-bootcamp-final-project-kamariza/
+├── .github/
+│   └── workflows/
+│       ├── docker-build.yml
+│       └── gitclone-ansible.yml
+├── .gitignore
+├── README.md
+├── terraform/
+└── ansible/
+    ├── inventory.ini
+    ├── ansible.cfg
+    ├── install-awscli.yml
+    ├── install-docker.yml
+    ├── install-grafana.yml
+    ├── install-node-exporter.yml
+    ├── install-prometheus.yml
+    └── roles/
+        ├── awscli/
+        ├── grafana/
+        └── prometheus/
+```
+
+
+#### Step 3: Save All the Files and Commit to Git
+
 
 
 

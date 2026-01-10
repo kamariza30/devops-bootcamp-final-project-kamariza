@@ -12,7 +12,7 @@
   become: true
   roles:
     - awscli
-    - node_exporter_docker
+    - prometheus.prometheus.node_exporter
 
 #Monitoring server configuration
 - name: Deploy monitoring stack
