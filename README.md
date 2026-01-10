@@ -21,13 +21,17 @@ All AWS infrastructure is provisioned declaratively using Terraform, ensuring re
 
 
 ## Output of The Project
+Accessing the the monitoring server via [monitoring.kamakloud.com](monitoring.kamakloud.com) & web server [web.kamakloud.com](web.kamakloud.com)
 
 ![Project Completion](./images/projectcompleted.png)
 
+ 
 
 ### CI/CD Pipeline
 
 The GitHub Actions workflow automates two primary tasks: publishing documentation updates and managing container image delivery. The pipeline clones the Ansible playbook repository to the Ansible controller, then builds Docker images, pushes them to Amazon ECR, and triggers deployment through SSM commands to EC2 instances running the containerized application.
+
+![ci cd](./images/cicd.png)
 
 ## Project Requirements and Setup
 
