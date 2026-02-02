@@ -141,6 +141,9 @@ Install pipx (Python package manager):
 ```
 sudo apt install pipx
 ```
+```
+pipx install --include-deps ansible
+```
 Ensure pipx binaries are in your PATH:
 ```
 pipx ensurepath
