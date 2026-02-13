@@ -2347,7 +2347,7 @@ Your application is now live and running on the web server.
 - Subdomain - monitoring
 - Domain - kamakloud.com
 - Path - Leave blank
-- Type - HTTPS
+- Type - HTTP
 - URL - localhost:3000
 
 
